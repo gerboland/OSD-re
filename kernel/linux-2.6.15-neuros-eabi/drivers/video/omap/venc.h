@@ -1,0 +1,619 @@
+
+#define OMAP2430_VIDENC_BASE                (io_p2v(OMAP24XX_DISP_BASE) + 0xc00)
+#define VIDENC_REV_ID                               (OMAP2430_VIDENC_BASE+0x000)
+#define VIDENC_STATUS                               (OMAP2430_VIDENC_BASE+0x004)
+#define VIDENC_F_CONTROL                            (OMAP2430_VIDENC_BASE+0x008)
+#define VIDENC_VIDOUT_CTRL                          (OMAP2430_VIDENC_BASE+0x010)
+#define VIDENC_SYNC_CTRL                            (OMAP2430_VIDENC_BASE+0x014)
+#define VIDENC_LLEN                                 (OMAP2430_VIDENC_BASE+0x01C)
+#define VIDENC_FLENS                                (OMAP2430_VIDENC_BASE+0x020)
+#define VIDENC_HFLTR_CTRL                           (OMAP2430_VIDENC_BASE+0x024)
+#define VIDENC_CC_CARR_WSS_CARR                     (OMAP2430_VIDENC_BASE+0x028)
+#define VIDENC_C_PHASE                              (OMAP2430_VIDENC_BASE+0x02C)
+#define VIDENC_GAIN_U                               (OMAP2430_VIDENC_BASE+0x030)
+#define VIDENC_GAIN_V                               (OMAP2430_VIDENC_BASE+0x034)
+#define VIDENC_GAIN_Y                               (OMAP2430_VIDENC_BASE+0x038)
+#define VIDENC_BLACK_LEVEL                          (OMAP2430_VIDENC_BASE+0x03C)
+#define VIDENC_BLANK_LEVEL                          (OMAP2430_VIDENC_BASE+0x040)
+#define VIDENC_X_COLOR                              (OMAP2430_VIDENC_BASE+0x044)
+#define VIDENC_M_CONTROL                            (OMAP2430_VIDENC_BASE+0x048)
+#define VIDENC_BSTAMP_WSS_DATA                      (OMAP2430_VIDENC_BASE+0x04C)
+#define VIDENC_S_CARR                               (OMAP2430_VIDENC_BASE+0x050)
+#define VIDENC_LINE21                               (OMAP2430_VIDENC_BASE+0x054)
+#define VIDENC_LN_SEL                               (OMAP2430_VIDENC_BASE+0x058)
+#define VIDENC_L21_WC_CTRL                          (OMAP2430_VIDENC_BASE+0x05C)
+#define VIDENC_HTRIGGER_VTRIGGER                    (OMAP2430_VIDENC_BASE+0x060)
+#define VIDENC_SAVID_EAVID                          (OMAP2430_VIDENC_BASE+0x064)
+#define VIDENC_FLEN_FAL                             (OMAP2430_VIDENC_BASE+0x068)
+#define VIDENC_LAL_PHASE_RESET                      (OMAP2430_VIDENC_BASE+0x06C)
+#define VIDENC_HS_INT_START_STOP_X                  (OMAP2430_VIDENC_BASE+0x070)
+#define VIDENC_HS_EXT_START_STOP_X                  (OMAP2430_VIDENC_BASE+0x074)
+#define VIDENC_VS_INT_START_X                       (OMAP2430_VIDENC_BASE+0x078)
+#define VIDENC_VS_INT_STOP_X_VS_INT_START_Y         (OMAP2430_VIDENC_BASE+0x07C)
+#define VIDENC_VS_INT_STOP_Y_VS_EXT_START_X         (OMAP2430_VIDENC_BASE+0x080)
+#define VIDENC_VS_EXT_STOP_X_VS_EXT_START_Y         (OMAP2430_VIDENC_BASE+0x084)
+#define VIDENC_VS_EXT_STOP_Y                        (OMAP2430_VIDENC_BASE+0x088)
+#define VIDENC_AVID_START_STOP_X                    (OMAP2430_VIDENC_BASE+0x090)
+#define VIDENC_AVID_START_STOP_Y                    (OMAP2430_VIDENC_BASE+0x094)
+#define VIDENC_FID_INT_START_X_FID_INT_START_Y      (OMAP2430_VIDENC_BASE+0x0A0)
+#define VIDENC_FID_INT_OFFSET_Y_FID_EXT_START_X     (OMAP2430_VIDENC_BASE+0x0A4)
+#define VIDENC_FID_EXT_START_Y_FID_EXT_OFFSET_Y     (OMAP2430_VIDENC_BASE+0x0A8)
+#define VIDENC_TVDETGP_INT_START_STOP_X             (OMAP2430_VIDENC_BASE+0x0B0)
+#define VIDENC_TVDETGP_INT_START_STOP_Y             (OMAP2430_VIDENC_BASE+0x0B4)
+#define VIDENC_GEN_CTRL                             (OMAP2430_VIDENC_BASE+0x0B8)
+#define VIDENC_DAC_TST                              (OMAP2430_VIDENC_BASE+0x0C4)
+#define VIDENC_DAC                                  (OMAP2430_VIDENC_BASE+0x0C8)
+
+/* Typical encoder values for different TV tests */
+#define VENC_HFLTR_CTRL_EN                          0x00000000
+#define VENC_X_COLOR_VAL                            0x00000000
+
+#define VENC_LINE21_VAL                             0x00000000
+#define VENC_LN_SEL_VAL                             0x00000015
+#define VENC_HTRIGGER_VTRIGGER_VAL                  0x00000000
+
+#define VENC_TVDETGP_INT_START_STOP_X_VAL           0x00140001
+#define VENC_TVDETGP_INT_START_STOP_Y_VAL           0x00010001
+#define VENC_GEN_CTRL_VAL                           0x00FF0000
+#define VENC_GEN_CTRL_PAL_VAL                       0x00F90000
+
+#define VENC_DAC_ENABLE                             0x0000000A
+
+/*Values that are same for NTSC, PAL-M AND PAL-60 */
+#define F_CONTROL_GEN                               0x00000000
+#define SYNC_CONTROL_GEN                            0x00001040
+#define VENC_LLEN_GEN                               0x00000359
+#define VENC_FLENS_GEN                              0x0000020C
+#define VENC_C_PHASE_GEN                            0x00000000
+#define VENC_CC_CARR_WSS_CARR_GEN                   0x000025ed
+#define VENC_L21_WC_CTL_GEN                         0x00170000
+#define VENC_SAVID_EAVID_GEN                        0x069300F4
+#define VENC_FLEN_FAL_GEN                           0x0016020C
+#define VENC_HS_EXT_START_STOP_X_GEN                0x000F0359
+#define VENC_VS_INT_START_X_GEN                     0x01A00000
+#define VENC_VS_EXT_STOP_X_VS_EXT_START_Y_GEN       0x020D01AC
+#define VENC_VS_EXT_STOP_Y_GEN                      0x00000006
+#define VENC_FID_INT_START_X_FID_INT_START_Y_GEN    0x0001008A
+#define VENC_FID_INT_OFFSET_Y_FID_EXT_START_X_GEN   0x01AC0106
+#define VENC_FID_EXT_START_Y_FID_EXT_OFFSET_Y_GEN   0x01060006
+
+
+/* Values that are same for PAL-BDGHI, PAL-N, PAL-NC */
+
+#define VENC_LLEN_PAL                               0x0000035F
+#define VENC_FLENS_PAL                              0x00000270
+
+#define VENC_LLEN_PAL_M                             0x00000359
+#define VENC_FLENS_PAL_M                            0x0000020C
+
+#define VENC_C_PHASE_PAL                            0x000000F0 /* BDGHI & N */
+#define VENC_C_PHASE_PAL_NC                         0x00000000
+
+#define VENC_CC_CARR_WSS_CARR_PAL                   0x000025ED
+
+#define VENC_L21_WC_CTL_PAL                         0x00000000
+
+#define VENC_SAVID_EAVID_PAL                        0x06A70108
+#define VENC_FLEN_FAL_PAL                           0x00170270
+#define VENC_HS_EXT_START_STOP_X_PAL                0x000F035F
+#define VENC_VS_INT_START_X_PAL                     0x01A70000
+#define VENC_VS_EXT_STOP_Y_PAL                      0x00000005
+
+#define VENC_VS_EXT_STOP_X_VS_EXT_START_Y_PAL       0x027101AF
+
+#define VENC_GAIN_U_PAL_BDGHI                       0x00000130
+
+
+#define VENC_GAIN_U_PAL_N                           0x000000FD
+#define VENC_GAIN_U_PAL_NC                          0x00000130
+#define VENC_GAIN_U_PAL_M                           0x00000140
+#define VENC_GAIN_U_PAL_60                          0x00000140
+
+#define VENC_GAIN_V_PAL_BDGHI                       0x000001B0
+
+#define VENC_GAIN_V_PAL_N                           0x00000165
+#define VENC_GAIN_V_PAL_NC                          0x000001B0
+#define VENC_GAIN_V_PAL_M                           0x00000190
+#define VENC_GAIN_V_PAL_60                          0x00000190
+
+#define VENC_GAIN_Y_PAL_BDGHI                       0x000001B0
+#define VENC_GAIN_Y_PAL_N                           0x00000177
+#define VENC_GAIN_Y_PAL_NC                          0x000001B0
+#define VENC_GAIN_Y_PAL_M                           0x000001C0
+#define VENC_GAIN_Y_PAL_60                          0x000001C0
+
+#define VENC_BLACK_LEVEL_PAL_BDGHI                  0x00000067
+
+#define VENC_BLANK_LEVEL_PAL_BDGHI                  0x00000067
+#define VENC_BLACK_LEVEL_PAL_NC                     0x00000063
+#define VENC_BLANK_LEVEL_PAL_NC                     0x00000063
+
+#define VENC_BLACK_LEVEL_PAL_N                      0x00000060
+#define VENC_BLANK_LEVEL_PAL_N                      0x00000053
+
+#define VENC_BLACK_LEVEL_PAL_M                      0x00000069
+#define VENC_BLANK_LEVEL_PAL_M                      0x0000005C
+
+#define VENC_BLACK_LEVEL_PAL_60                     0x00000069
+#define VENC_BLANK_LEVEL_PAL_60                     0x0000005C
+
+#define VENC_M_CONTROL_PAL                          0x00000002
+#define VENC_M_CONTROL_PAL_M                        0x00000003
+#define VENC_M_CONTROL_PAL_60                       0x00000003
+
+#define VENC_BSTAMP_WSS_DATA_PAL_BDGHI              0x00000043
+
+#define VENC_BSTAMP_WSS_DATA_PAL_N                  0x00000038
+#define VENC_BSTAMP_WSS_DATA_PAL_M                  0x0000003F
+#define VENC_BSTAMP_WSS_DATA_PAL_NC                 0x00000041
+#define VENC_BSTAMP_WSS_DATA_PAL_60                 0x0000003F
+
+#define VENC_S_CARR_PAL_M                           0x21E6EFE3
+#define VENC_S_CARR_PAL_NC                          0x21E6EFE3
+#define VENC_S_CARR_PAL_BDGHI                       0x2A098ACB
+#define VENC_S_CARR_PAL_60                          0x2A098ACB
+
+
+
+#define VENC_LAL_PHASE_RESET_PAL                    0x00040136 /* BDGHI & N */
+#define VENC_LAL_PHASE_RESET_PAL_NC                 0x00040135
+#define VENC_LAL_PHASE_RESET_PAL_2                  0x00040107 /* PAL-M & PAL-60 */
+
+#define VENC_HS_INT_START_STOP_X_PAL                0x00920358 /* BDGHI & N */
+#define VENC_HS_INT_START_STOP_X_NC                 0x00880358
+#define VENC_HS_INT_START_STOP_X_PAL_2              0x007e034e /* PAL-M & PAL-60 */
+
+#define VENC_VS_INT_STOP_X_VS_INT_START_Y_PAL       0x000601A7
+#define VENC_VS_INT_STOP_X_VS_INT_START_Y_PAL_2     0x020901a0 /* PAL-M & PAL-60*/
+#define VENC_VS_INT_STOP_X_VS_INT_START_Y_PAL_NC    0x026F01A7
+
+#define VENC_VS_INT_STOP_Y_VS_EXT_START_X_PAL       0x01AF0036
+#define VENC_VS_INT_STOP_Y_VS_EXT_START_X_PAL_2     0x01ac0022 /* PAL-M & PAL-60 */
+#define VENC_VS_INT_STOP_Y_VS_EXT_START_X_PAL_NC    0x01AF002E
+
+#define VENC_AVID_START_STOP_X_PAL                  0x03530082 /* BDGHI & N */
+#define VENC_AVID_START_STOP_X_PAL_NC               0x03530083
+#define VENC_AVID_START_STOP_X_PAL_2                0x03530082 /* PAL-M & PAL-60 */
+
+#define VENC_AVID_START_STOP_Y_PAL                  0x0270002E
+#define VENC_AVID_START_STOP_Y_PAL_2                0x0270002E /* PAL-M & PAL-60 */
+#define VENC_AVID_START_STOP_Y_PAL_NC               0x026E002E
+
+#define VENC_FID_INT_START_X_FID_INT_START_Y_PAL    0x0005008A
+
+#define VENC_FID_INT_OFFSET_Y_FID_EXT_START_X_PAL   0x002E0138
+
+
+#define VENC_FID_EXT_START_Y_FID_EXT_OFFSET_Y_PAL   0x01380005
+
+/* NTSC */
+#define VENC_GAIN_U_NTSC_M                          0x00000102
+#define VENC_GAIN_U_NTSC_J                          0x00000100
+#define VENC_GAIN_U_NTSC_443                        0x00000140
+
+#define VENC_GAIN_V_NTSC_M                          0x0000016C
+#define VENC_GAIN_V_NTSC_J                          0x0000016D
+#define VENC_GAIN_V_NTSC_443                        0x00000190
+
+#define VENC_GAIN_Y_NTSC_M                          0x0000012F
+#define VENC_GAIN_Y_NTSC_J                          0x00000196
+#define VENC_GAIN_Y_NTSC_443                        0x000001C0
+
+#define VENC_BLACK_LEVEL_NTSC_443                   0x00000069
+#define VENC_BLANK_LEVEL_NTSC_443                   0x0000005C
+
+#define VENC_BLACK_LEVEL_NTSC_M                     0x00000043
+#define VENC_BLANK_LEVEL_NTSC_M                     0x00000038
+
+#define VENC_BLACK_LEVEL_NTSC_J                     0x00000053
+#define VENC_BLANK_LEVEL_NTSC_J                     0x00000053
+
+#define VENC_M_CONTROL_NTSC                         0x00000001
+
+#define VENC_BSTAMP_WSS_DATA_NTSC                   0x00000038
+#define VENC_BSTAMP_WSS_DATA_NTSC_443               0x0000003F
+
+#define VENC_S_CARR_NTSC_443                        0x2A098ACB
+#define VENC_S_CARR_NTSC                            0x21F07C1F
+
+#define VENC_HTRIGGER_VTRIGGER_VAL                  0x00000000
+
+#define VENC_FLEN_FAL_NTSC                          0x0001020C
+
+#define VENC_LAL_PHASE_RESET_NTSC                   0x00060107
+
+#define VENC_HS_INT_START_STOP_X_NTSC               0x007E034E
+
+#define VENC_HS_INT_START_STOP_X_443                0x007e034e
+
+#define VENC_VS_INT_STOP_X_VS_INT_START_Y_NTSC      0x020901A0
+#define VENC_VS_INT_STOP_X_VS_INT_START_Y_NTSC_443  0x020901a0
+
+#define VENC_VS_INT_STOP_Y_VS_EXT_START_X_NTSC      0x01AC0022
+#define VENC_VS_INT_STOP_Y_VS_EXT_START_X_NTSC_443  0x01ac0022
+
+#define VENC_AVID_START_STOP_X_NTSC                 0x032000A0
+#define VENC_AVID_START_STOP_X_NTSC_443             0x03480079
+
+#define VENC_AVID_START_STOP_Y_NTSC                 0x02060026
+#define VENC_AVID_START_STOP_Y_NTSC_443             0x02040024
+
+#define VENC_TVDETGP_INT_START_STOP_X_GEN           0x00140001
+#define VENC_TVDETGP_INT_START_STOP_Y_GEN           0x00010001
+
+
+struct tv_standard_config{
+    uint32_t llen;
+    uint32_t flens;
+    uint32_t hfltr_ctrl;
+    uint32_t cc_carr_wss_carr;
+    uint32_t c_phase;
+    uint32_t gain_u;
+    uint32_t gain_v;
+    uint32_t gain_y;
+    uint32_t black_level;
+    uint32_t blank_level;
+    uint32_t x_color;
+    uint32_t m_control;
+    uint32_t bstamp_wss_data;
+    uint32_t s_carr;
+    uint32_t line21;
+    uint32_t ln_sel;
+    uint32_t l21_wc_ctl;
+    uint32_t htrigger_vtrigger;
+    uint32_t savid_eavid;
+    uint32_t flen_fal;
+    uint32_t lal_phase_reset;
+    uint32_t hs_int_start_stop_x;
+    uint32_t hs_ext_start_stop_x;
+    uint32_t vs_int_start_x;
+    uint32_t vs_int_stop_x_vs_int_start_y;
+    uint32_t vs_int_stop_y_vs_ext_start_x;
+    uint32_t vs_ext_stop_x_vs_ext_start_y;
+    uint32_t vs_ext_stop_y;
+    uint32_t avid_start_stop_x;
+    uint32_t avid_start_stop_y;
+    uint32_t fid_int_start_x_fid_int_start_y;
+    uint32_t fid_int_offset_y_fid_ext_start_x;
+    uint32_t fid_ext_start_y_fid_ext_offset_y;
+    uint32_t tvdetgp_int_start_stop_x;
+    uint32_t tvdetgp_int_start_stop_y;
+    uint32_t gen_ctrl;
+    uint32_t dac_tst;
+};
+
+#if defined(CONFIG_FB_OMAP_TVC_PAL_BDGHI_PANEL)
+static struct tv_standard_config pal_bdghi_cfg = {
+    VENC_LLEN_PAL,
+    VENC_FLENS_PAL,
+    VENC_HFLTR_CTRL_EN,
+    VENC_CC_CARR_WSS_CARR_PAL,
+    VENC_C_PHASE_PAL,
+    VENC_GAIN_U_PAL_BDGHI,
+    VENC_GAIN_V_PAL_BDGHI,
+    VENC_GAIN_Y_PAL_BDGHI,
+    VENC_BLACK_LEVEL_PAL_BDGHI,
+    VENC_BLANK_LEVEL_PAL_BDGHI,
+    VENC_X_COLOR_VAL,
+    VENC_M_CONTROL_PAL,
+    VENC_BSTAMP_WSS_DATA_PAL_BDGHI,
+    VENC_S_CARR_PAL_BDGHI,
+    VENC_LINE21_VAL,
+    VENC_LN_SEL_VAL,
+    VENC_L21_WC_CTL_PAL,
+    VENC_HTRIGGER_VTRIGGER_VAL,
+    VENC_SAVID_EAVID_PAL,
+    VENC_FLEN_FAL_PAL,
+    VENC_LAL_PHASE_RESET_PAL,
+    VENC_HS_INT_START_STOP_X_PAL,
+    VENC_HS_EXT_START_STOP_X_PAL,
+    VENC_VS_INT_START_X_PAL,
+    VENC_VS_INT_STOP_X_VS_INT_START_Y_PAL,
+    VENC_VS_INT_STOP_Y_VS_EXT_START_X_PAL,
+    VENC_VS_EXT_STOP_X_VS_EXT_START_Y_PAL,
+    VENC_VS_EXT_STOP_Y_PAL,
+    VENC_AVID_START_STOP_X_PAL,
+    VENC_AVID_START_STOP_Y_PAL,
+    VENC_FID_INT_START_X_FID_INT_START_Y_PAL,
+    VENC_FID_INT_OFFSET_Y_FID_EXT_START_X_PAL,
+    VENC_FID_EXT_START_Y_FID_EXT_OFFSET_Y_GEN,
+    VENC_TVDETGP_INT_START_STOP_X_GEN,
+    VENC_TVDETGP_INT_START_STOP_Y_GEN,
+    VENC_GEN_CTRL_PAL_VAL,
+    VENC_DAC_ENABLE
+};
+#endif
+
+#if defined(CONFIG_FB_OMAP_TVC_PAL_N_PANEL)
+static struct tv_standard_config pal_n_cfg = {
+    VENC_LLEN_PAL,
+    VENC_FLENS_PAL,
+    VENC_HFLTR_CTRL_EN,
+    VENC_CC_CARR_WSS_CARR_PAL,
+    VENC_C_PHASE_PAL,
+    VENC_GAIN_U_PAL_N,
+    VENC_GAIN_V_PAL_N,
+    VENC_GAIN_Y_PAL_N,
+    VENC_BLACK_LEVEL_PAL_N,
+    VENC_BLANK_LEVEL_PAL_N,
+    VENC_X_COLOR_VAL,
+    VENC_M_CONTROL_PAL,
+    VENC_BSTAMP_WSS_DATA_PAL_BDGHI,
+    VENC_S_CARR_PAL_BDGHI,
+    VENC_LINE21_VAL,
+    VENC_LN_SEL_VAL,
+    VENC_L21_WC_CTL_PAL,
+    VENC_HTRIGGER_VTRIGGER_VAL,
+    VENC_SAVID_EAVID_PAL,
+    VENC_FLEN_FAL_PAL,
+    VENC_LAL_PHASE_RESET_PAL,
+    VENC_HS_INT_START_STOP_X_PAL,
+    VENC_HS_EXT_START_STOP_X_PAL,
+    VENC_VS_INT_START_X_PAL,
+    VENC_VS_INT_STOP_X_VS_INT_START_Y_PAL,
+    VENC_VS_INT_STOP_Y_VS_EXT_START_X_PAL,
+    VENC_VS_EXT_STOP_X_VS_EXT_START_Y_PAL,
+    VENC_VS_EXT_STOP_Y_PAL,
+    VENC_AVID_START_STOP_X_PAL,
+    VENC_AVID_START_STOP_Y_PAL,
+    VENC_FID_INT_START_X_FID_INT_START_Y_PAL,
+    VENC_FID_INT_OFFSET_Y_FID_EXT_START_X_PAL,
+    VENC_FID_EXT_START_Y_FID_EXT_OFFSET_Y_GEN,
+    VENC_TVDETGP_INT_START_STOP_X_GEN,
+    VENC_TVDETGP_INT_START_STOP_Y_GEN,
+    VENC_GEN_CTRL_PAL_VAL,
+    VENC_DAC_ENABLE
+};
+#endif
+
+#if defined(CONFIG_FB_OMAP_TVC_PAL_NC_PANEL)
+static struct tv_standard_config pal_nc_cfg = {
+    VENC_LLEN_PAL,
+    VENC_FLENS_PAL,
+    VENC_HFLTR_CTRL_EN,
+    VENC_CC_CARR_WSS_CARR_PAL,
+    VENC_C_PHASE_PAL,
+    VENC_GAIN_U_PAL_NC,
+    VENC_GAIN_V_PAL_NC,
+    VENC_GAIN_Y_PAL_NC,
+    VENC_BLACK_LEVEL_PAL_NC,
+    VENC_BLANK_LEVEL_PAL_NC,
+    VENC_X_COLOR_VAL,
+    VENC_M_CONTROL_PAL,
+    VENC_BSTAMP_WSS_DATA_PAL_NC,
+    VENC_S_CARR_PAL_NC,
+    VENC_LINE21_VAL,
+    VENC_LN_SEL_VAL,
+    VENC_L21_WC_CTL_PAL,
+    VENC_HTRIGGER_VTRIGGER_VAL,
+    VENC_SAVID_EAVID_PAL,
+    VENC_FLEN_FAL_PAL,
+    VENC_LAL_PHASE_RESET_PAL_NC,
+    VENC_HS_INT_START_STOP_X_NC,
+    VENC_HS_EXT_START_STOP_X_PAL,
+    VENC_VS_INT_START_X_PAL,
+    VENC_VS_INT_STOP_X_VS_INT_START_Y_PAL_NC,
+    VENC_VS_INT_STOP_Y_VS_EXT_START_X_PAL_NC,
+    VENC_VS_EXT_STOP_X_VS_EXT_START_Y_PAL,
+    VENC_VS_EXT_STOP_Y_PAL,
+    VENC_AVID_START_STOP_X_PAL_NC,
+    VENC_AVID_START_STOP_Y_PAL_NC,
+    VENC_FID_INT_START_X_FID_INT_START_Y_PAL,
+    VENC_FID_INT_OFFSET_Y_FID_EXT_START_X_PAL,
+    VENC_FID_EXT_START_Y_FID_EXT_OFFSET_Y_GEN,
+    VENC_TVDETGP_INT_START_STOP_X_GEN,
+    VENC_TVDETGP_INT_START_STOP_Y_GEN,
+    VENC_GEN_CTRL_PAL_VAL,
+    VENC_DAC_ENABLE
+};
+#endif
+
+#if defined(CONFIG_FB_OMAP_TVC_PAL_M_PANEL)
+static struct tv_standard_config pal_m_cfg = {
+    VENC_LLEN_PAL_M,
+    VENC_FLENS_PAL_M,
+    VENC_HFLTR_CTRL_EN,
+    VENC_CC_CARR_WSS_CARR_GEN,
+    VENC_C_PHASE_GEN,
+    VENC_GAIN_U_PAL_M,
+    VENC_GAIN_V_PAL_M,
+    VENC_GAIN_Y_PAL_M,
+    VENC_BLACK_LEVEL_PAL_M,
+    VENC_BLANK_LEVEL_PAL_M,
+    VENC_X_COLOR_VAL,
+    VENC_M_CONTROL_PAL_M,
+    VENC_BSTAMP_WSS_DATA_PAL_M,
+    VENC_S_CARR_PAL_M,
+    VENC_LINE21_VAL,
+    VENC_LN_SEL_VAL,
+    VENC_L21_WC_CTL_GEN,
+    VENC_HTRIGGER_VTRIGGER_VAL,
+    VENC_SAVID_EAVID_GEN,
+    VENC_FLEN_FAL_GEN,
+    VENC_LAL_PHASE_RESET_PAL_2,
+    VENC_HS_INT_START_STOP_X_PAL_2,
+    VENC_HS_EXT_START_STOP_X_GEN,
+    VENC_VS_INT_START_X_GEN,
+    VENC_VS_INT_STOP_X_VS_INT_START_Y_PAL_2,
+    VENC_VS_INT_STOP_Y_VS_EXT_START_X_PAL_2,
+    VENC_VS_EXT_STOP_X_VS_EXT_START_Y_GEN,
+    VENC_VS_EXT_STOP_Y_GEN,
+    VENC_AVID_START_STOP_X_PAL_2,
+    VENC_AVID_START_STOP_Y_PAL_2,
+    VENC_FID_INT_START_X_FID_INT_START_Y_GEN,
+    VENC_FID_INT_OFFSET_Y_FID_EXT_START_X_GEN,
+    VENC_FID_EXT_START_Y_FID_EXT_OFFSET_Y_GEN,
+    VENC_TVDETGP_INT_START_STOP_X_GEN,
+    VENC_TVDETGP_INT_START_STOP_Y_GEN,
+    VENC_GEN_CTRL_VAL,
+    VENC_DAC_ENABLE
+};
+#endif
+
+#if defined(CONFIG_FB_OMAP_TVC_PAL_60_PANEL)
+static struct tv_standard_config pal_60_cfg = {
+    VENC_LLEN_GEN,
+    VENC_FLENS_GEN,
+    VENC_HFLTR_CTRL_EN,
+    VENC_CC_CARR_WSS_CARR_GEN,
+    VENC_C_PHASE_GEN,
+    VENC_GAIN_U_PAL_60,
+    VENC_GAIN_V_PAL_60,
+    VENC_GAIN_Y_PAL_60,
+    VENC_BLACK_LEVEL_PAL_60,
+    VENC_BLANK_LEVEL_PAL_60,
+    VENC_X_COLOR_VAL,
+    VENC_M_CONTROL_PAL_60,
+    VENC_BSTAMP_WSS_DATA_PAL_60,
+    VENC_S_CARR_PAL_60,
+    VENC_LINE21_VAL,
+    VENC_LN_SEL_VAL,
+    VENC_L21_WC_CTL_GEN,
+    VENC_HTRIGGER_VTRIGGER_VAL,
+    VENC_SAVID_EAVID_GEN,
+    VENC_FLEN_FAL_GEN,
+    VENC_LAL_PHASE_RESET_PAL_2,
+    VENC_HS_INT_START_STOP_X_PAL_2,
+    VENC_HS_EXT_START_STOP_X_GEN,
+    VENC_VS_INT_START_X_GEN,
+    VENC_VS_INT_STOP_X_VS_INT_START_Y_PAL_2,
+    VENC_VS_INT_STOP_Y_VS_EXT_START_X_PAL_2,
+    VENC_VS_EXT_STOP_X_VS_EXT_START_Y_GEN,
+    VENC_VS_EXT_STOP_Y_GEN,
+    VENC_AVID_START_STOP_X_PAL_2,
+    VENC_AVID_START_STOP_Y_PAL_2,
+    VENC_FID_INT_START_X_FID_INT_START_Y_GEN,
+    VENC_FID_INT_OFFSET_Y_FID_EXT_START_X_GEN,
+    VENC_FID_EXT_START_Y_FID_EXT_OFFSET_Y_GEN,
+    VENC_TVDETGP_INT_START_STOP_X_GEN,
+    VENC_TVDETGP_INT_START_STOP_Y_GEN,
+    VENC_GEN_CTRL_VAL,
+    VENC_DAC_ENABLE
+};
+#endif
+
+#if defined(CONFIG_FB_OMAP_TVC_NTSC_M_PANEL)
+static struct tv_standard_config ntsc_m_cfg  = {
+    VENC_LLEN_GEN,
+    VENC_FLENS_GEN,
+    VENC_HFLTR_CTRL_EN,
+    VENC_CC_CARR_WSS_CARR_GEN,
+    VENC_C_PHASE_GEN,
+    VENC_GAIN_U_NTSC_M,
+    VENC_GAIN_V_NTSC_M,
+    VENC_GAIN_Y_NTSC_M,
+    VENC_BLACK_LEVEL_NTSC_M,
+    VENC_BLANK_LEVEL_NTSC_M,
+    VENC_X_COLOR_VAL,
+    VENC_M_CONTROL_NTSC,
+    VENC_BSTAMP_WSS_DATA_NTSC,
+    VENC_S_CARR_NTSC,
+    VENC_LINE21_VAL,
+    VENC_LN_SEL_VAL,
+    VENC_L21_WC_CTL_GEN,
+    VENC_HTRIGGER_VTRIGGER_VAL,
+    VENC_SAVID_EAVID_GEN,
+    VENC_FLEN_FAL_GEN,
+    VENC_LAL_PHASE_RESET_NTSC,
+    VENC_HS_INT_START_STOP_X_NTSC,
+    VENC_HS_EXT_START_STOP_X_GEN,
+    VENC_VS_INT_START_X_GEN,
+    VENC_VS_INT_STOP_X_VS_INT_START_Y_NTSC,
+    VENC_VS_INT_STOP_Y_VS_EXT_START_X_NTSC,
+    VENC_VS_EXT_STOP_X_VS_EXT_START_Y_GEN,
+    VENC_VS_EXT_STOP_Y_GEN,
+    VENC_AVID_START_STOP_X_NTSC,
+    VENC_AVID_START_STOP_Y_NTSC,
+    VENC_FID_INT_START_X_FID_INT_START_Y_GEN,
+    VENC_FID_INT_OFFSET_Y_FID_EXT_START_X_GEN,
+    VENC_FID_EXT_START_Y_FID_EXT_OFFSET_Y_GEN,
+    VENC_TVDETGP_INT_START_STOP_X_GEN,
+    VENC_TVDETGP_INT_START_STOP_Y_GEN,
+    VENC_GEN_CTRL_VAL,
+    VENC_DAC_ENABLE
+};
+#endif
+
+#if defined(CONFIG_FB_OMAP_TVC_NTSC_443_PANEL)
+static struct tv_standard_config ntsc_443_cfg = {
+    VENC_LLEN_GEN,
+    VENC_FLENS_GEN,
+    VENC_HFLTR_CTRL_EN,
+    VENC_CC_CARR_WSS_CARR_GEN,
+    VENC_C_PHASE_GEN,
+    VENC_GAIN_U_NTSC_443,
+    VENC_GAIN_V_NTSC_443,
+    VENC_GAIN_Y_NTSC_443,
+    VENC_BLACK_LEVEL_NTSC_443,
+    VENC_BLANK_LEVEL_NTSC_443,
+    VENC_X_COLOR_VAL,
+    VENC_M_CONTROL_NTSC,
+    VENC_BSTAMP_WSS_DATA_NTSC_443,
+    VENC_S_CARR_NTSC_443,
+    VENC_LINE21_VAL,
+    VENC_LN_SEL_VAL,
+    VENC_L21_WC_CTL_GEN,
+    VENC_HTRIGGER_VTRIGGER_VAL,
+    VENC_SAVID_EAVID_GEN,
+    VENC_FLEN_FAL_GEN,
+    VENC_LAL_PHASE_RESET_NTSC,
+    VENC_HS_INT_START_STOP_X_443,
+    VENC_HS_EXT_START_STOP_X_GEN,
+    VENC_VS_INT_START_X_GEN,
+    VENC_VS_INT_STOP_X_VS_INT_START_Y_NTSC_443,
+    VENC_VS_INT_STOP_Y_VS_EXT_START_X_NTSC_443,
+    VENC_VS_EXT_STOP_X_VS_EXT_START_Y_GEN,
+    VENC_VS_EXT_STOP_Y_GEN,
+    VENC_AVID_START_STOP_X_NTSC_443,
+    VENC_AVID_START_STOP_Y_NTSC_443,
+    VENC_FID_INT_START_X_FID_INT_START_Y_GEN,
+    VENC_FID_INT_OFFSET_Y_FID_EXT_START_X_GEN,
+    VENC_FID_EXT_START_Y_FID_EXT_OFFSET_Y_GEN,
+    VENC_TVDETGP_INT_START_STOP_X_GEN,
+    VENC_TVDETGP_INT_START_STOP_Y_GEN,
+    VENC_GEN_CTRL_VAL,
+    VENC_DAC_ENABLE
+};
+#endif
+
+#if defined(CONFIG_FB_OMAP_TVC_NTSC_J_PANEL)
+static struct tv_standard_config ntsc_j_cfg = {
+    VENC_LLEN_GEN,
+    VENC_FLENS_GEN,
+    VENC_HFLTR_CTRL_EN,
+    VENC_CC_CARR_WSS_CARR_GEN,
+    VENC_C_PHASE_GEN,
+    VENC_GAIN_U_NTSC_J,
+    VENC_GAIN_V_NTSC_J,
+    VENC_GAIN_Y_NTSC_J,
+    VENC_BLACK_LEVEL_NTSC_J,
+    VENC_BLANK_LEVEL_NTSC_J,
+    VENC_X_COLOR_VAL,
+    VENC_M_CONTROL_NTSC,
+    VENC_BSTAMP_WSS_DATA_NTSC,
+    VENC_S_CARR_NTSC,
+    VENC_LINE21_VAL,
+    VENC_LN_SEL_VAL,
+    VENC_L21_WC_CTL_GEN,
+    VENC_HTRIGGER_VTRIGGER_VAL,
+    VENC_SAVID_EAVID_GEN,
+    VENC_FLEN_FAL_GEN,
+    VENC_LAL_PHASE_RESET_NTSC,
+    VENC_HS_INT_START_STOP_X_NTSC,
+    VENC_HS_EXT_START_STOP_X_GEN,
+    VENC_VS_INT_START_X_GEN,
+    VENC_VS_INT_STOP_X_VS_INT_START_Y_NTSC,
+    VENC_VS_INT_STOP_Y_VS_EXT_START_X_NTSC,
+    VENC_VS_EXT_STOP_X_VS_EXT_START_Y_GEN,
+    VENC_VS_EXT_STOP_Y_GEN,
+    VENC_AVID_START_STOP_X_NTSC,
+    VENC_AVID_START_STOP_Y_NTSC,
+    VENC_FID_INT_START_X_FID_INT_START_Y_GEN,
+    VENC_FID_INT_OFFSET_Y_FID_EXT_START_X_GEN,
+    VENC_FID_EXT_START_Y_FID_EXT_OFFSET_Y_GEN,
+    VENC_TVDETGP_INT_START_STOP_X_GEN,
+    VENC_TVDETGP_INT_START_STOP_Y_GEN,
+    VENC_GEN_CTRL_VAL,
+    VENC_DAC_ENABLE
+};
+#endif

@@ -1,0 +1,165 @@
+PRIMARY AUTHORS AND MAJOR CONTRIBUTORS TO AM_UTILS:
+The primary authors work at the Filesystems and Storage Lab at Stony Brook
+University.   They also currently maintain the package.
+
+* Erez Zadok  <ezk@cs.sunysb.edu>
+- Primary Investigator
+
+* Charles P. Wright  <cwright@cs.sunysb.edu>
+- Primary maintainer (12/2004-Present)
+- Snapshotting support
+- Initial development
+
+* Dave Quigley  <dquigley@fsl.cs.sunysb.edu>
+- 2.6 Port
+- Maintenance (1/2005-Present)
+
+* Arun Krishna Kumar <arunmk@fsl.cs.sunysb.edu>
+- Maintenance (6/2005-12/2005)
+
+* Mohammad Nayyer Zubair
+- Initial development
+- Regression Suite
+
+* Puja Gupta
+- Initial development
+
+* Harikesavan Krishnan
+- Initial development
+
+* Josef "Jeff" Sipek
+- Maintenance (12/2005-Present)
+
+Other contributors:
+* Sai Suman  <suman@pantasys.com>
+January 10, 2005: NFS Export patch
+January 10, 2005: Copyup bug fix.
+
+* Alex de Landgraaf <alex@delandgraaf.com>
+January 10, 2005: Fixes for gcc 2.9.5
+
+* Anton Farygin <rider@altlinux.com>
+February 2, 2005:  Fixes for non-privileged copyup.
+March 2, 2005: vfs_readdir bug in dirhelper.c
+March 2, 2005: Fix copyup on symlinks
+March 2, 2005: Fix handling of failed whiteout lookup
+August 15, 2005: Fix possible deadlock in incgen when memory allocaiton fails.
+
+* Jaspreet Singh  <jsingh@ensim.com>
+February 8, 2005: Use security functions for xattr copyup.
+May 11, 2005: Fix for Xattr copyup on Selinux
+May 12, 2005: Selinux requires valid i_mode before d_instantiate.
+
+* Fabian Franz <fs-bugs@fabian-franz.de>
+February 22, 2005: Hardlinks should have the same inode number.
+February 22, 2005: Device copyup fix.
+February 22, 2005: Identified d_delete problem over tmpfs
+March 2, 2005: vfs_readdir bug in dirhelper.c
+
+* Terry Barnaby <terry1@beam.ltd.uk>
+March 3, 2005: Copy attributes on d_revalidate
+March 2, 2005: Fix for readdir over NFS
+March 16, 2005: Fix for unionfs_dir_llseek
+April 20, 2005: Submitted opaque directory patch, wich the current code
+is inspired by.
+
+* Lucas Correia Villa Real <lucasvr@gobolinux.org>
+March 7, 2005: Makefile uses MODDIR.
+
+* Eduard Bloch <blade@debian.org>
+March 7, 2005: Fix man page sections, improve Makefile
+
+* Fernando Freiregomez <fernando.freiregomez@telefonica.es>
+March 7, 2005: Have snapmerge fix times on created files.
+
+* Markus F.X.J. Oberhumer <markus@oberhumer.com>
+April 18, 2005: Fixes for compilation on AMD64
+
+* Tomas Matejicek
+May 10, 2005: I used his linuxrc as the basis for the Unionfs as a root
+file system instructions.
+
+* Shaya Potter
+July 19, 2005: Symbolic links should not be renamed to whiteout files, as
+that confuses Unionfs later.
+September 2, 2005: Fix copyup checking for mmap.
+October 11, 2005: Deadlock fix.
+October 20, 2005: Improved locking for branch manipulation
+October 20, 2005: Fix for removing opaque directories.
+November 18, 2005: NULL check in lookup_whiteout.
+
+* Jan Engelhardt <jengelh@linux01.gwdg.de>
+July 22, 2005: Support for realpath in unionctl.
+August 1, 2005: Use vprintk instead of vsnprintf/printk combo.
+August 9, 2005: Fix unionctl so that it doesn't truncate "/" to "".
+
+* Malcom Lashley <malc@gentoo.org>
+August 9, 2005: AMD64 compile fixes.
+
+* Eduard Bloch <blade@debian.org>
+August 9, 2005: Debian packaging files.
+
+* Klaus Knopper <unionfs@knopper.net>
+August 22, 2005: Fix from lookup_one_len in unionfs_create.
+September 23, 2005: Fix for unionfs_permission pertaining to 
+read only file systems
+
+* Junjiro Okajima <hooanon05@yahoo.co.jp>
+September 21, 2005: Fix for of by one error in KMALLOC.
+September 26, 2005: Fix for d_revalidate.
+September 28, 2005: rmdir fix.
+October 13, 2005: rename fix (Bug #425).
+October 19, 2005: NFS security hole fix.
+November 5, 2005: Fix for race b/t lookup and new_dentry_private_data.
+November 8, 2005: Fix error checking in lookup_backend.
+December 27, 2005: Fixed create whiteout bug, forgotten dput()
+December 27, 2005: Fixed unlink bug, forgotten dput()s
+December 27, 2005: Fixed create bug, forgotten dput(), extra GET_PARENT
+December 27, 2005: Fixed permission bug, creat/open truncates the running
+executable
+December 27, 2005: Properly copyup atime, mtime, and ctime.
+December 28, 2005: Fixed missing DPUT()s in unionfs_lookup_backend
+December 28, 2005: Fixed privileges-related bug in is_opaque_dir
+December 29, 2005: Fixed missing/misplaced DPUT()sg DPUT()
+January 20, 2006: Introduced per-branch nfsro flag (unionctl.c)
+January 22, 2006: Fixed persistant inode code: link, rmdir, shrinking of
+dcache, map validation
+January 24, 2006: Fixed hidden inode not being iput() since ibstart and
+ibend is not updated.
+January 31, 2006: Fixes "pseudo hardlink" via persistent inode
+February 2, 2006: Fixed minor bug in unionfs_create regarding stale atime and
+mtime
+February 5, 2006: Changed get_uin() to read_uid()
+February 10, 2006: Fixed stale inode problem of regression/bug418.sh
+March 4, 2006: Fixed unionfs_permission on reiserfs and xfs
+April 17, 2006: Fixed link-unlink issue (i_nlink going to 0)
+
+* Robert Glowczynski <roglo@op.pl>
+October 6, 2005: Fix for fsync over squashfs.
+
+* Charles Duffy <cduffy@spamcop.net
+October 21, 2005: Compile fix for x86_64
+
+* Tom Young <twyun@twyoung.com>
+October 22, 2005: readdir.sh regression script
+
+* Alessio Curri <alessio.curri@elettra.trieste.it>
+November 11, 2005: Fix for RPM spec file.
+
+* Martin Walter <mawa@uni-freiburg.de>
+November 16, 2005: Fix a thinko in NFS_SECURITY_HOLE.
+
+* Martin Kreiner <m.kreiner@levigo.de>
+January 13, 2006: Introduced mount option nfsperms, and removed NFS_SECURITY_HOLE
+January 20, 2006: Introduced per-branch nfsro flag, and removed nfsperms
+
+* Peeka J. Enberg <penberg@cs.helsinki.fi>
+January 14, 2006: Removed the use of GFP_UNIONFS and replaced it with GFP_KERNEL
+
+* Amnon Aaronsohn <bla@cs.huji.ac.il>
+January 25, 2006: Fixed patch-kernel.sh error msg
+
+* Konstantin Olchanski <olchansk@triumf.ca>
+February 8, 2006: Fixed inode_permission (check for nameidata being null)
+
+* And many more ...

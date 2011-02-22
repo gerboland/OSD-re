@@ -1,0 +1,26 @@
+Kernels directory
+-----------------
+
+kernels/linux-2.6.14-headers
+  Contains a sanitised set of header files from version 2.6.14. I've borrowed these 
+  from one of the excellent pre-built toolchains supplied by Codesourcery[1].
+
+  This was done as I had problems compiling a working toolchain against Neuros'
+  header files. Certain symbols were missing.
+
+
+kernels/linux-2.6.15-neuros-eabi
+  Contains the source code of the kernel supplied by Neuros, with the following changes
+    - EABI support, using a patch set[2] (not all applied cleanly, so hand done)
+    - EABI caused unusual error, most network communication would fail. Running
+      wireshark showed that packets the OSD was sending were bad - their header
+      checksum was incorrect. Turned out that the assembly code in 
+      include/asm-arm/checksum.h needed a fix found in later kernels.
+    - Squashfs support
+
+  Note the neuros defconfig here isn't used by Buildroot. Use the one specified in 
+  buildroot/board/neuros/osd to customise the kernel.
+
+
+[1] http://www.codesourcery.com
+[2] http://www.codesourcery.com/sgpp/lite/arm/portal/kbentry22
