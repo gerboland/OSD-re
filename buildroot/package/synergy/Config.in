@@ -1,0 +1,14 @@
+config BR2_PACKAGE_SYNERGY
+	bool "synergy"
+	depends on BR2_PACKAGE_XORG7
+	depends on BR2_INSTALL_LIBSTDCPP
+	help
+	  Synergy lets you easily share a single mouse and
+	  keyboard between multiple computers with different
+	  operating systems, each with its own display,
+	  without special hardware.
+
+	  http://synergy2.sourceforge.net/
+
+comment "synergy requires a toolchain with C++ support enabled"
+	depends on BR2_PACKAGE_XORG7 && !BR2_INSTALL_LIBSTDCPP
