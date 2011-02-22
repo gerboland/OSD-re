@@ -1,0 +1,99 @@
+
+  OSD:re - a new firmware for the Neuros OSD
+  Gerry Boland <gerboland@gmail.com>
+
+      (For information on how to build your own firmware, see INSTALL)
+
+The Neuros OSD is an ARM-based embedded device specialising in video playback
+and recording. The original firmware is (as of now: 2011) several years old and
+has seen no improvements in the last 2 years.
+
+The original firmware is a bunch of Makefiles and scripts thrown together, and
+it can be very difficult to figure out what's happening. The UI is based on Qt
+but feels rather unresponsive on the poor 200Mhz CPU.
+
+The video playback & record is handled by propietary code running on a C54x DSP,
+which we (i.e. applications running on the ARM core) have no access to aside 
+from via propietary kernel modules (all closed code written by Ingenient).
+
+Goals of this project are:
+1. Use a modern and pre-existing build system to construct firmware images.
+2. Use a more modern toolchain than the supplied gcc3.4, tailored to the 
+   arm926ej-s chip. Specifically EABI should be enabled, to increase floating-
+   point arithmetic performance.
+3. A newer kernel would be nice. But this may cause problems with the propietary
+   modules, so needs investigating. Ultimate goal would be to port drivers to
+   latest kernel release and push them upstream.
+4. Allow all the primary features of the OSD to be controllable via command-
+   line. It should be a scripting heaven :)
+5. Investigate a read-write filesystem.
+6. GUI: This will require investigation. With newer toolchain, it possible
+   Neuros' UI will improve speed-wise. But personally I'd love to use QtQuick[1]
+   to design an UI which works more efficiently, and is easier to hack on.
+7. Performance tweaks, make this thing fly!
+8. SDK to help everyone join in.
+9. Document everything.
+
+
+Progress so far:
+1. The Buildroot[2] project is a neat set of Makefiles and patches which make
+   embedded development quite pleasant. It incorporates much software for free,
+   as easy as ticking a box.
+
+   It generates a basic Neuros OSD kernel and root image right now (not a 
+   flash-able UPK yet).
+
+2. Using Crosstool-ng[3] one can build a toolchain with gcc 4.4.3 and uClibc
+   0.9.30.1 which works well on the OSD. It supports EABI. It needs thorough 
+   testing!
+
+3. Right now I've kept Neuros' 2.6.15 kernel, but have added
+    - EABI support, using a patch set[4] (not all applied cleanly)
+    - EABI caused unusual error, most network communication would fail. Running
+      wireshark showed that packets the OSD was sending were bad - their header
+      checksum was incorrect. Turned out that the assembly code in 
+      include/asm-arm/checksum.h needed a fix found in later kernels.
+    - Squashfs support
+   Propietary modules initially refused to insmod with
+      version magic '2.6.15 preempt ARMv5 gcc-3.4' should be '2.6.15 preempt ARMv5 gcc-4.4'
+   but using a Hex editor to change the version string has made them work.
+   This hack will need careful testing.
+
+4. Todo! The Busybox-based ash is there, as is lua.
+
+5. I want to add mini_fo to add a read-write overlay on the read-only
+   filesystem. But where will it store data? Is it safe?
+
+6. Buildroot builds the latest Qt libraries running on top of TinyX. Performance
+   needs to be determined, but [6] shows there may be hope.
+   
+7. Performance
+    - uboot very kindly sits there for 3 seconds waiting for you to interrupt.
+      I genuinely think 1 second is enough, and I'll make it easy to extend this
+    - Could compress uImage with LZMA, see if that speeds things up. It would
+      good to determine if the flash or the CPU is the bottleneck.
+    - squashfs is reported to have improved performance over cramfs. Try it.
+    - kernel contains several pauses in boot - mostly at CF card & SD card 
+      driver init. 
+    - kernel rather verbose output can be quietened [7]
+
+8. SDK: The Buildroot guys are working on automatic generation of an SDK with
+   their system. I'm waiting for this to materialise.
+
+9. I'll try to doc as I go.
+
+
+Notes
+-------------
+uClibc is currently built with minimal debugging enabled
+
+Read-only filesystem causes problems, especially in /etc
+
+
+[1] http://qt.nokia.com/products/qt-quick
+[2] http://buildroot.uclibc.org/
+[3] http://ymorin.is-a-geek.org/dokuwiki/projects/crosstool
+[4] http://www.codesourcery.com/sgpp/lite/arm/portal/kbentry22
+[5] http://www.denx.de/wiki/bin/view/Know/MiniFOHome
+[6] http://www.youtube.com/watch?v=AvFwzyCknLg
+[7] http://thread.gmane.org/gmane.linux.kernel.embedded/2281
