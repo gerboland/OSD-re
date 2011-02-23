@@ -1,0 +1,4 @@
+reporter_name="Gerry Boland"
+reporter_url="http://www.gerryboland.net/osd-re"
+reporter_comment="Experimental toolchain for Neuros OSD, including gcc4.4.3, uclibc0.9.30.1 with EABI and softfpu."
+
