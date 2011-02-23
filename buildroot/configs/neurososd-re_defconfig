@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
-# Buildroot 2011.02-rc1-00019-ga7da53b Configuration
-# Tue Feb 22 21:05:54 2011
+# Buildroot 2011.02-rc1-g2246bf8 Configuration
+# Wed Feb 23 01:18:23 2011
 #
 BR2_HAVE_DOT_CONFIG=y
 BR2_arm=y
@@ -100,9 +100,9 @@ BR2_TOOLCHAIN_EXTERNAL=y
 # BR2_TOOLCHAIN_EXTERNAL_CODESOURCERY_ARM2010Q1 is not set
 # BR2_TOOLCHAIN_EXTERNAL_CODESOURCERY_ARM2009Q1 is not set
 BR2_TOOLCHAIN_EXTERNAL_CUSTOM=y
-BR2_TOOLCHAIN_EXTERNAL_PATH="/home/gerry/x-tools/arm-unknown-linux-uclibcgnueabi"
-BR2_TOOLCHAIN_EXTERNAL_CUSTOM_PREFIX="$(ARCH)-unknown-linux-uclibcgnueabi"
-BR2_TOOLCHAIN_EXTERNAL_PREFIX="$(ARCH)-unknown-linux-uclibcgnueabi"
+BR2_TOOLCHAIN_EXTERNAL_PATH="$(TOPDIR)../toolchain/arm-unknown-linux-uclibcgnueabi/bin"
+BR2_TOOLCHAIN_EXTERNAL_CUSTOM_PREFIX="$(ARCH)-osd-linux-uclibcgnueabi"
+BR2_TOOLCHAIN_EXTERNAL_PREFIX="$(ARCH)-osd-linux-uclibcgnueabi"
 BR2_TOOLCHAIN_EXTERNAL_UCLIBC=y
 BR2_TOOLCHAIN_EXTERNAL_CUSTOM_UCLIBC=y
 # BR2_TOOLCHAIN_EXTERNAL_CUSTOM_GLIBC is not set
