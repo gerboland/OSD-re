@@ -1,0 +1,185 @@
+# Companion libraries config options
+# Those libraries are required for different versions of gcc,
+# and can be used by binutils and gdb (maybe others as well).
+
+menu "Companion libraries"
+
+config COMPLIBS_NEEDED
+    bool
+    default n
+
+config GMP_NEEDED
+    bool
+    default n
+    select GMP
+    select COMPLIBS_NEEDED
+
+config MPFR_NEEDED
+    bool
+    default n
+    select MPFR
+    select COMPLIBS_NEEDED
+
+config PPL_NEEDED
+    bool
+    default n
+    select PPL
+    select COMPLIBS_NEEDED
+
+config CLOOG_NEEDED
+    bool
+    default n
+    select CLOOG
+    select COMPLIBS_NEEDED
+
+config MPC_NEEDED
+    bool
+    default n
+    select MPC
+    select COMPLIBS_NEEDED
+
+config LIBELF_NEEDED
+    bool
+    default n
+    select LIBELF
+    select COMPLIBS_NEEDED
+
+config COMPLIBS
+    bool
+    default n
+
+config WRAPPER_NEEDED
+    bool
+    default n
+
+config GMP
+    bool
+    select COMPLIBS
+
+config MPFR
+    bool
+    select GMP
+    select COMPLIBS
+
+config PPL
+    bool
+    select GMP
+    select COMPLIBS
+
+config CLOOG
+    bool
+    select GMP
+    select PPL
+    select COMPLIBS
+
+config MPC
+    bool
+    select GMP
+    select MPFR
+    select COMPLIBS
+
+config LIBELF
+    bool
+    select COMPLIBS
+
+config LIBELF_TARGET
+    bool
+
+if GMP
+source "config/companion_libs/gmp.in"
+endif
+if MPFR
+source "config/companion_libs/mpfr.in"
+endif
+if PPL
+source "config/companion_libs/ppl.in"
+endif
+if CLOOG
+source "config/companion_libs/cloog.in"
+endif
+if MPC
+source "config/companion_libs/mpc.in"
+endif
+if LIBELF || LIBELF_TARGET
+comment "libelf version needed to build for target"
+    depends on !LIBELF
+source "config/companion_libs/libelf.in"
+endif
+
+config FOO
+    bool
+
+if COMPLIBS
+
+comment "Companion libraries common options"
+
+config COMPLIBS_BACKUP
+    bool
+    default y
+    depends on ! COMPLIBS_SHARED
+
+config COMPLIBS_CHECK
+    bool
+    prompt "Check the companion libraries builds (!!! READ HELP!!!)"
+    default n
+    help
+      It is highly recommended to check the newly built companion libraries.
+      Unfortunately, this is a very intensive task, and takes a loooong time.
+      
+      Checking the newly built companion libraries is thus disabled by default,
+      but it is suggested that you check them at least once on your machine,
+      and if they work, disable the check on subsequent builds.
+      
+      If you suspect that one (or more) of your companion libraries is the
+      cause for incorrectly generated code, you should answer 'Y' here.
+      Note however that this will take a really long time. For example,
+      building PPL on my machine takes roughly 1'40", while checking it takes
+      about 1h40'...
+
+config COMPLIBS_SHARED
+    bool
+    prompt "Build shared companion libraries"
+    default n
+    depends on COMPLIBS
+    select WRAPPER_NEEDED
+    help
+      By default, the companion libraries will be build static. If you want to
+      build shared libraries, then you can say 'Y' here, but a wrapper will be
+      needed (see docs/overview.txt,section "Tools wrapper").
+      
+      It is highly recommended that you keep static libraries.
+
+choice
+    bool
+    prompt "|  Install tools wrapper as:"
+    depends on WRAPPER_NEEDED
+    default TOOLS_WRAPPER_SHELL
+
+config TOOLS_WRAPPER_SCRIPT
+    bool
+    prompt "shell script"
+    help
+      If your host has a shell, then you should say 'Y' here, to use
+      a (very very simple) shell script as wrapper.
+      
+      See docs/overview.txt, section "Tools wrapper".
+
+config TOOLS_WRAPPER_EXEC
+    bool
+    prompt "executable"
+    help
+      If your host lacks a shell, then you should say 'Y' here, to use
+      an executable.
+      
+      See docs/overview.txt, section "Tools wrapper".
+
+endchoice
+
+config TOOLS_WRAPPER
+    string
+    default "script" if TOOLS_WRAPPER_SCRIPT
+    default "exec"   if TOOLS_WRAPPER_EXEC
+
+endif # COMPLIBS
+
+endmenu

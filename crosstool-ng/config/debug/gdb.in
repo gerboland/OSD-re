@@ -1,0 +1,59 @@
+# GDB menu
+
+config DEBUG_gdb
+    help
+      Enable gdb for the target
+
+source "config/debug/gdb.in.cross"
+source "config/debug/gdb.in.native"
+source "config/debug/gdb.in.gdbserver"
+
+choice
+    bool
+    prompt "gdb version"
+    depends on GDB_CROSS || GDB_NATIVE || GDB_GDBSERVER
+# Don't remove next line
+# CT_INSERT_VERSION_BELOW
+
+config GDB_V_7_2
+    bool
+    prompt "7.2 (EXPERIMENTAL)"
+    depends on EXPERIMENTAL
+    select GDB_7_0_or_later
+
+config GDB_V_7_1
+    bool
+    prompt "7.1 (EXPERIMENTAL)"
+    depends on EXPERIMENTAL
+    select GDB_7_0_or_later
+
+config GDB_V_7_0_1
+    bool
+    prompt "7.0.1 (EXPERIMENTAL)"
+    depends on EXPERIMENTAL
+    select GDB_7_0_or_later
+
+config GDB_V_7_0
+    bool
+    prompt "7.0 (EXPERIMENTAL)"
+    depends on EXPERIMENTAL
+    select GDB_7_0_or_later
+
+config GDB_V_6_8
+    bool
+    prompt "6.8"
+
+endchoice
+
+config GDB_7_0_or_later
+    bool
+
+config GDB_VERSION
+    string
+# Don't remove next line
+# CT_INSERT_VERSION_STRING_BELOW
+    default "7.2" if GDB_V_7_2
+    default "7.1" if GDB_V_7_1
+    default "7.0.1" if GDB_V_7_0_1
+    default "7.0" if GDB_V_7_0
+    default "6.8" if GDB_V_6_8

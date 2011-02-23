@@ -1,0 +1,27 @@
+# Menu for the native GDB
+
+config GDB_NATIVE
+    bool
+    prompt "Native gdb"
+    default n
+    depends on ! BARE_METAL
+    depends on ! BACKEND
+    help
+      Build and install a native gdb for the target, to run on the target.
+
+if GDB_NATIVE
+
+config GDB_NATIVE_NO_STATIC
+    bool
+    default n
+
+config GDB_NATIVE_STATIC
+    bool
+    prompt "Build a static native gdb"
+    depends on ! GDB_NATIVE_NO_STATIC
+    default n
+    help
+      In case you have trouble with dynamic loading of shared libraries,
+      you will find that a static gdb comes in handy.
+
+endif # GDB_NATIVE
