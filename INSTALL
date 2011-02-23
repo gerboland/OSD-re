@@ -1,0 +1,79 @@
+
+  Instructions on building the firmware
+
+
+Below I give a quick run-through of how to generate a firmware.
+
+To do anything more complicated, please read the DEVELOPING guide! If you try
+to do a rebuild, having removed some options, those options will not be removed
+from the rootfs. Steps are required for this.
+
+Step by step, here is the procedure:
+
+1. Build a toolchain. You will only have to do this once. Steps are
+
+     cd crosstool-ng/
+     ./configure --prefix=`pwd`
+
+   The configure script will tell you if any prerequisites are missing. Install
+   them before proceeding
+
+     make && make install
+
+   This will just place the "ct-ng" script in the crosstool-ng directory. Now we
+   configure crosstool-ng for our purposes (using config in samples/arm-osd-linux-uclibcgnueabi)
+   
+     ./ct-ng arm-osd-linux-uclibcgnueabi
+
+   If you like, you can view the settings with ./ct-ng menuconfig, but you can
+   just build the default with
+
+     ./ct-ng build
+
+   Now go away and make a cup of tea, this will take some time. But in the end
+   you should have a working toolchain installed into toolchain/arm-osd-linux-uclibcgnueabi
+
+   *****************************************************************************
+   ** You only need to do this once. Once you have a toolchain, just keep it! **
+   *****************************************************************************
+
+   For future cross-compiling, until a SDK arrives, you should add
+     toolchain/arm-osd-linux-uclibcgnueabi/bin
+   to your $PATH.
+
+
+
+2. Build the firmware. This is where you can have some fun. Enter the 
+   "buildroot" directory.
+
+   Configure buildroot initially for the OSD with
+
+     make neurososd-re_defconfig
+
+   **Note: If you customise the configuration, calling the above command will 
+   restore the config to the defaults - you loose your changes!!
+
+   Now you can customise this configuration to your heart's content with
+
+     make menuconfig
+
+   and build it with a simple
+
+     make
+
+   Now have another cup of tea, and perhaps do something more time consuming as
+   depending on the amount of options selected, this can take some time.
+
+   When/if it completes, you will find the generated kernel image (uImage) and 
+   root filesystem in the
+     buildroot/output/images/
+   directory.
+
+
+That's it. You've generated a firmware!
+
+
+Note that not all packages/features will build successfully, so you may have to
+fix things or deselect them.
+
+
