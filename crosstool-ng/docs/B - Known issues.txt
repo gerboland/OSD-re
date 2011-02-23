@@ -1,0 +1,148 @@
+File.........: B - Known issues.txt
+Copyrigth....: (C) 2010 Yann E. MORIN <yann.morin.1998@anciens.enib.fr>
+License......: Creative Commons Attribution Share Alike (CC-by-sa), v2.5
+
+
+Known issues  /
+_____________/
+
+
+This files lists the known issues encountered while developping crosstool-NG,
+but that could not be addressed before the release.
+
+The file has one section for each known issue, each section containing four
+sub-sections: Symptoms, Explanations, Fix, and Workaround.
+
+Each section is separated from the others with a lines of at least 4 dashes.
+
+The following dummy section explains it all.
+
+    --------------------------------
+    Symptoms:
+      A one-liner of what you would observe.
+
+    Explanations:
+      An as much as possible in-depth explanations of the context, why it
+      happens, what has been investigated so far, and possible orientations
+      as how to try to solve this (eg. URLs, code snippets...).
+
+    Fix:
+      What you have to do to fix it, if at all possible.
+      The fact that there is a fix, and yet this is a known issue means that
+      time to incorporate the fix in crosstool-NG was missing, or planned for
+      a future release.
+
+    Workaround:
+      What you can do to fix it *temporarily*, if at all possible.
+      A workaround is not a real fix, as it can break other parts of
+      crosstool-NG, but at least makes you going in your particular case.
+
+So now, on for the real issues...
+
+--------------------------------
+Symptoms:
+  gcc is not found, although I *do* have gcc installed.
+
+Explanations:
+  This is an issue on at least RHEL systems, where gcc is a symlink to ccache.
+  Because crosstool-NG create links to gcc for the build and host environment,
+  those symlinks are in fact pointing to ccache, which then doesn't know how
+  to run the compiler.
+
+  A possible fix could probably set the environment variable CCACHE_CC to the
+  actual compiler used.
+
+Fix:
+  None known.
+
+Workaround:
+  Uninstall ccache.
+
+--------------------------------
+Symptoms:
+  The extract and/or path steps fail under Cygwin.
+
+Explanations:
+  This is not related to crosstool-NG. Mounts under Cygwin are by default not
+  case-sensitive. You have to use so-called "managed" mounts. See:
+  http://cygwin.com/faq.html section 4, question 32.
+
+Fix:
+  Use "managed" mounts for the directories where you build *and* install your
+  toolchains.
+
+Workaround:
+  None.
+
+--------------------------------
+Symptoms:
+  uClibc fails to build under Cygwin.
+
+Explanations:
+  With uClibc, it is possible to build a cross-ldd. Unfortunately, it is
+  not (currently) possible to build this cross-ldd under Cygwin.
+
+Fix:
+  None so far.
+
+Workaround:
+  Disable the cross-ldd build.
+
+--------------------------------
+Symptoms:
+  On 64-bit build systems, the glibc (possibly eglibc too) build fails for
+  64-bit targets, because it can not find libgcc.
+
+Explanations:
+  This issue has been observed when the companion libraries are built
+  statically. For an unknown reason, in this case, the libgcc built by the
+  core gcc is not located in the same place it is located when building
+  with shared companion libraries.
+
+Fix:
+  None so far.
+
+Workaround:
+  Build shared companion libraries.
+
+--------------------------------
+Symptoms:
+  While building the final gcc, I get an error message that ends with:
+    libtool.m4: error: problem compiling FC test program
+
+Explanations:
+  The gcc build procedure tries to run a Fortran test to see if it has a
+  working native fortran compiler installed on the build machine, and it
+  can't find one. A native Fortran compiler is needed (seems to be neede)
+  to build the Fortran frontend of the cross-compiler.
+  Even if you don't want to build the Fortran frontend, gcc tries to see
+  if it has one, but fails. This is no problem, as the Fortran frontend
+  will not be built. There is nothing to be worry about (unless you do
+  want to build the Fortran frontend, of course).
+
+Fix:
+  None so far. It's a spurious error, so there will probably never be
+  a fix for this issue.
+
+Workaround:
+  None needed, it's a spurious error.
+
+--------------------------------
+Symptoms:
+  gcc barfs because it is "unable to detect the exception model".
+
+Explanations:
+  On some architectures, proper stack unwinding (C++) requires that
+  setjmp/longjmp (sjlj) be used, while on other architectures do not
+  need sjlj. On some architectures, gcc is unable to determine whether
+  sjlj are needed or not.
+
+Fix:
+  None so far.
+
+Workaround:
+  Trying setting use of sjlj to either 'Y' or 'N' (instead of the
+  default 'M') in the menuconfig, option CT_CC_GCC_SJLJ_EXCEPTIONS
+  labelled "Use sjlj for exceptions".
+
+--------------------------------

@@ -1,0 +1,33 @@
+File.........: 7 - Contributing to crosstool-NG.txt
+Copyrigth....: (C) 2010 Yann E. MORIN <yann.morin.1998@anciens.enib.fr>
+License......: Creative Commons Attribution Share Alike (CC-by-sa), v2.5
+
+
+Contributing to crosstool-NG  /
+_____________________________/
+
+
+Sending a bug report |
+---------------------+
+
+If you need to send a bug report, please send a mail with subject
+prefixed with "[CT_NG]" with to following destinations:
+    TO: yann.morin.1998 (at) anciens.enib.fr
+    CC: crossgcc (at) sourceware.org
+
+
+Sending patches |
+----------------+
+
+If you want to enhance crosstool-NG, there's a to-do list in the TODO file.
+
+Patches should come with the appropriate SoB line. A SoB line is typically
+something like:
+   Signed-off-by: John DOE <john.doe@somewhere.net>
+
+The SoB line is clearly described in Documentation/SubmittingPatches , section
+12, of your favourite Linux kernel source tree.
+
+
+For larger or more frequent contributions, mercurial should be used.
+There is a nice, complete and step-by-step tutorial in section 'C'.

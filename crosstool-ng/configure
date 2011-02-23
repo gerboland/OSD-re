@@ -1,0 +1,467 @@
+#!/bin/sh
+
+myname="${0##*/}"
+
+VERSION=$( cat .version )
+DATE=$( date +%Y%m%d )
+
+PREFIX_DEFAULT=/usr/local
+
+BINDIR_set=
+LIBDIR_set=
+DOCDIR_set=
+MANDIR_set=
+LOCAL_set=
+FORCE=
+
+do_quit=
+
+# Simply print the error message, and exit. Obvious, he?
+do_error() {
+    printf "${myname}: ${@}\n"
+    exit 1
+}
+
+# Given an option string and the following argument,
+# echoes the value of the option.
+# If --var=val => echoes val and returns 0, meaning second arg was not consumed
+# If --var val => echoes val and returns non null, meaning second arg was used
+get_optval(){
+    case "$1" in
+        --*=?*)
+            printf "${1#*=}"
+            return 0
+            ;;
+        *)
+            printf "${2}"
+            return 1
+            ;;
+    esac
+}
+
+# The set_xxx functions will set the corresponding configuration variable
+# They return 0 if second arg was not consumed, and non-zero if it was consumed.
+set_prefix() {
+    PREFIX="$( get_optval "$1" "$2" )"
+}
+set_bindir() {
+    BINDIR_set=1
+    BINDIR="$( get_optval "$1" "$2" )"
+}
+set_libdir() {
+    LIBDIR_set=1
+    LIBDIR="$( get_optval "$1" "$2" )"
+}
+set_docdir() {
+    DOCDIR_set=1
+    DOCDIR="$( get_optval "$1" "$2" )"
+}
+set_mandir() {
+    MANDIR_set=1
+    MANDIR="$( get_optval "$1" "$2" )"
+}
+set_tool() {
+    local var_name="${1%%=*}"
+    var_name="${var_name#--with-}"
+    eval ${var_name}="\$( get_optval "$1" "$2" )"
+}
+
+# var_list is a list of variables, each one holding a path to a
+# tool, either detected by ./configure, or specified by the user.
+var_list=""
+
+# This function adds a variable name to the above list of variable names.
+# $1: the name of the variable to add to the list
+add_to_var_list() {
+    var_list="${var_list} ${1}"
+}
+
+# A function to test for required tools/headers/libraries
+# Return 0 (true) if found, !0 (false) if not found
+#
+# $*: [prog|inc|lib]=<name[ name...]>
+#     the name(s) of tool(s) to test for
+#     mandatory
+#       eg: prog=bash   prog="curl wget"
+# $*: var=<var_name>
+#     the name of the variable to test and set
+#     optional
+#       eg: var=bash    if ${bash} is set and non-null, use that,
+#                       else check for bash and set bash=$(which bash)
+# $*: ver=<regexp>
+#     for each 'prog', test if $(prog --version) matches 'regexp'
+#     optional
+#       eg: ver='^GNU bash, version [34]\.'
+# $*: err=<error_message>
+#     the error message to print if tool is missing
+#     optional, defaults to: '${prog}: none found'
+#       eg: err="'bash' 3.x or above was not found"
+check_for() {
+    local prog inc lib
+    local var ver err
+    local val
+    local item
+    local where
+    local status
+
+    for item in "${@}"; do
+        case "${item}" in
+            prog=*|inc=*|lib=*|var=*|ver=*|err=*)
+                eval ${item%%=*}="'${item#*=}'"
+                ;;
+            *)  do_error "has_or_abort: incorrect parameters: '$@'";;
+        esac
+    done
+
+    case "${prog}:${inc}:${lib}" in
+        ?*::)
+            for item in ${prog}; do
+                printf "Checking for '${item}'... "
+                if [ -n "${var}" ]; then
+                    eval val="\${${var}}"
+                    if [ -n "${val}" ]; then
+                        printf "${val} (cached)\n"
+                        add_to_var_list "${var}"
+                        return 0
+                    fi
+                fi
+                where="$( which "${item}" 2>/dev/null )"
+                if [ -z "${where}" ]; then
+                    printf "no\n"
+                    continue
+                elif [ -n "${ver}" ]; then
+                    str=$( LC_ALL=C "${where}" --version 2>&1   \
+                           |grep -E "${ver}"                    \
+                           |head -n 1
+                         )
+                    if [ -z "${str}" ]; then
+                        printf "no\n"
+                        unset where
+                        continue
+                    fi
+                fi
+                status="${where}"
+                break
+            done
+            ;;
+        :?*:)
+            for item in ${inc}; do
+                printf "Checking for '${item}'... "
+                if printf "#include \"${item}\"" |gcc -x c -c - -o /dev/null >/dev/null 2>&1; then
+                    where="${item}"
+                    status=yes
+                    break;
+                fi
+                printf "no\n"
+            done
+            ;;
+        ::?*)
+            for item in ${lib}; do
+                printf "Checking for '${item}'... "
+                where="$( gcc -print-file-name="${item}" )"
+                if [ "${where}" != "${item}" ]; then
+                    where="$( readlink "${where}" )"
+                    status=yes
+                    break;
+                fi
+                printf "no\n"
+            done
+            ;;
+    esac
+
+    if [ -z "${status}" ]; then
+        printf "\n${err:-${prog}${inc}${lib}: none found}\n\n"
+        printf "Either you are missing entirely the needed tool,\n"
+        printf "or the version you have is too old.\n"
+        if [ -n "${var}" ]; then
+            printf "You can give the path to this tool using: --with-${var}=PATH\n"
+        fi
+        printf "\n"
+        return 1
+    fi
+
+    printf "${status}"
+    if [ -n "${var}" ]; then
+        eval ${var}='"'"${where}"'"'
+        add_to_var_list "${var}"
+    fi
+    printf "\n"
+}
+
+# This function checks for a tool, and aborts if not found
+# See check_for(), above, for how to call has_or_abort
+has_or_abort() {
+    if ! check_for "$@"; then
+        # FORCE can be set in the environment
+        [ -z "${FORCE}" ] && do_error "Bailing out..."
+        printf "\n"
+        printf "<*                                          *>\n"
+        printf "<*            FORCE in action:              *>\n"
+        printf "<* Continuing despite missing pre-requisite *>\n"
+        printf "<*          Prepare for breakage            *>\n"
+        printf "<*                                          *>\n"
+        printf "\n"
+    fi
+}
+
+do_help() {
+    cat <<__EOF__
+\`configure' configures crosstool-NG-${VERSION} to adapt to many kind of systems.
+
+USAGE: ./configure [OPTION]...
+
+Defaults for the options are specified in brackets.
+
+Configuration:
+  -h, --help              display this help and exit
+      --force             force configure to continue, even in case
+                          some pre-requisites are missing
+
+Installation directories:
+  --prefix=PREFIX         install files in PREFIX [${PREFIX_DEFAULT}]
+  --local                 don't install, and use current directory
+
+By default, \`make install' will install all the files in
+\`${PREFIX_DEFAULT}/bin', \`${PREFIX_DEFAULT}/lib' etc.  You can specify
+an installation prefix other than \`${PREFIX_DEFAULT}' using \`--prefix',
+for instance \`--prefix=\${HOME}'.
+
+For better control, use the options below.
+
+Fine tuning of the installation directories:
+  --bindir=DIR            user executables [PREFIX/bin]
+  --libdir=DIR            object code libraries [PREFIX/lib]
+  --docdir=DIR            info documentation [PREFIX/share/doc]
+  --mandir=DIR            man documentation [PREFIX/share/man]
+
+Optional Features:
+  --with-install=PATH     Specify the full PATH to GNU install
+  --with-make=PATH        Specify the full PATH to GNU make >= 3.80
+  --with-grep=PATH        Specify the full PATH to GNU grep
+  --with-sed=PATH         Specify the full PATH to GNU sed
+  --with-bash=PATH        Specify the full PATH to bash >= 3.0
+__EOF__
+}
+
+#---------------------------------------------------------------------
+# Set user's options
+
+while [ $# -ne 0 ]; do
+    case "$1" in
+        --local)    LOCAL_set="y"; shift;;
+        --prefix*)  set_prefix "$1" "$2" && shift || shift 2;;
+        --bindir*)  set_bindir "$1" "$2" && shift || shift 2;;
+        --libdir*)  set_libdir "$1" "$2" && shift || shift 2;;
+        --docdir*)  set_docdir "$1" "$2" && shift || shift 2;;
+        --mandir*)  set_mandir "$1" "$2" && shift || shift 2;;
+        --with-*)   set_tool   "$1" "$2" && shift || shift 2;;
+        --force)    FORCE=1; shift;;
+        --help|-h)  do_help; exit 0;;
+        # Skip, auto-stuff compatibility
+        --build=*|--host=*|--infodir=*|--datadir=*|--sysconfdir=*|--localstatedir=*) shift;;
+        --build|--host|--infodir|--datadir|--sysconfdir|--localstatedir)             shift 2;;
+        *)          printf "Unrecognised option: '${1}'\n"; do_help; exit 1;;
+    esac
+done
+
+# Use defaults
+[ -z "${PREFIX}" ] && set_prefix "" "${PREFIX_DEFAULT}"
+
+# Special case when installing locally
+if [ "${LOCAL_set}" = "y" ]; then
+    set_prefix "" "$( pwd )"
+    set_bindir "" "$( pwd )"
+    set_libdir "" "$( pwd )"
+    set_docdir "" "$( pwd )/docs"
+    set_mandir "" "$( pwd )/docs"
+fi
+
+#---------------------------------------------------------------------
+# Some sanity checks, now
+
+# We check for grep and sed manually, because they are used in check_for()
+printf "Checking for 'grep'... "
+if [ -n "${grep}" ]; then
+    printf "${grep} (cached)\n"
+else
+    grep="$( which grep 2>/dev/null )"
+    if [ -z "${grep}" ]; then
+        printf "not found\n"
+    else
+        printf "${grep}\n"
+        printf "Checking whether '${grep}' supports -E... "
+        if echo 'foo' |"${grep}" -E 'foo' >/dev/null 2>&1; then
+            printf "yes\n"
+        else
+            printf "no\n"
+            grep=
+        fi
+    fi
+fi
+if [ -z "${grep}" ]; then
+    printf "Either you are missing entirely the needed tool,\n"
+    printf "or the version you have is too old.\n"
+    printf "You can give the path to this tool using: --with-grep=PATH\n"
+    do_error "Bailing out..."
+fi
+add_to_var_list grep
+
+printf "Checking for 'sed'... "
+if [ -n "${sed}" ]; then
+    printf "${sed} (cached)\n"
+else
+    sed="$( which sed 2>/dev/null )"
+    if [ -z "${sed}" ]; then
+        printf "not found\n"
+    else
+        printf "${sed}\n"
+        printf "Checking whether '${sed}' supports -i and -e... "
+        touch .ct-ng.sed.test
+        if "${sed}" -r -i -e 's/foo/bar/' .ct-ng.sed.test >/dev/null 2>&1; then
+            printf "yes\n"
+        else
+            printf "no\n"
+            sed=
+        fi
+        rm -f .ct-ng.sed.test
+    fi
+fi
+if [ -z "${sed}" ]; then
+    printf "Either you are missing entirely the needed tool,\n"
+    printf "or the version you have is too old.\n"
+    printf "You can give the path to this tool using: --with-sed=PATH\n"
+    do_error "Bailing out..."
+fi
+add_to_var_list sed
+
+# The regular list of tools we can now easily check for
+has_or_abort prog=bash                              \
+             var=bash                               \
+             ver='^GNU bash, version (3\.[1-9]|4)'  \
+             err="'bash' 3.1 or above was not found"
+has_or_abort prog=cut
+has_or_abort prog=install var=install
+has_or_abort prog=make                                  \
+             var=make                                   \
+             ver='^GNU Make (3.[89][[:digit:]]|[4-9])'  \
+             err="GNU 'make' 3.80 or above was not found"
+has_or_abort prog=gcc
+has_or_abort prog="awk gawk" ver='^GNU Awk' err="GNU 'awk' was not found"
+has_or_abort prog=bison
+has_or_abort prog=flex
+has_or_abort prog=makeinfo
+has_or_abort prog=automake                                                      \
+             ver='\(GNU automake\) (1\.[[:digit:]]{2,}|[2-9][[:digit:]]*\.)'    \
+             err="'automake' 1.10 or above was not found"
+has_or_abort prog=libtool                                                                           \
+             var=libtool                                                                            \
+             ver='\(GNU libtool.*\) (2[[:digit:]]*\.|1\.6[[:digit:]]*\.|1\.5\.[2-9][[:digit:]]+)'   \
+             err="'libtool' 1.5.26 or above was not found"
+has_or_abort prog=stat
+has_or_abort prog="aria2c curl wget"
+has_or_abort prog=cvs
+has_or_abort prog=patch
+has_or_abort prog=tar
+has_or_abort prog=gzip
+has_or_abort prog=bzip2
+has_or_abort prog=lzma
+has_or_abort prog=readlink
+has_or_abort prog=objcopy var=objcopy
+has_or_abort prog=objdump var=objdump
+has_or_abort prog=readelf var=readelf
+has_or_abort prog=patch var=patch
+
+has_or_abort inc="ncurses/ncurses.h ncurses/curses.h ncurses.h curses.h"    \
+             err="'ncurses' headers files were not found"
+
+ncurses_libs="$( for l in ncursesw ncurses curses; do   \
+                     for x in so a dylib; do            \
+                         printf "lib$l.$x ";            \
+                     done;                              \
+                 done                                   \
+               )"
+has_or_abort lib="${ncurses_libs}"                  \
+             err="'ncurses' library was not found"
+
+#---------------------------------------------------------------------
+# Compute the version string
+
+# If this version is n hg clone, try to get the revision number
+# If we can't get the revision number, use date
+printf "Computing version string... "
+case "${VERSION}" in
+    *+hg|hg)
+        REVISION="$( hg id -n 2>/dev/null || true )"
+        case "${REVISION}" in
+            "")
+                VERSION="${VERSION}_unknown@$( date +%Y%m%d.%H%M%S )";;
+            *)
+                VERSION="${VERSION}_$( hg id -b )@${REVISION%%+}_$( hg id -i )"
+                ;;
+        esac
+        # Arrange to have no / in the directory name, no need to create an
+        # arbitrarily deep directory structure
+        VERSION="$( printf "${VERSION}\n" |"${sed}" -r -e 's|/+|_|g;' )"
+        ;;
+esac
+printf "${VERSION}\n"
+
+#---------------------------------------------------------------------
+# Compute and check install paths
+
+# Now we have the version string, we can build up the paths
+[ -z "${BINDIR_set}" ] && BINDIR="${PREFIX}/bin"
+[ -z "${LIBDIR_set}" ] && LIBDIR="${PREFIX}/lib"
+[ -z "${DOCDIR_set}" ] && DOCDIR="${PREFIX}/share/doc"
+[ -z "${MANDIR_set}" ] && MANDIR="${PREFIX}/share/man"
+
+# Install support files in our own sub-dir, so as not to mangle (system)
+# files and dirs, but only if not --local
+if [ -z "${LOCAL_set}" ]; then
+    LIBDIR="${LIBDIR}/ct-ng-${VERSION}"
+    DOCDIR="${DOCDIR}/ct-ng-${VERSION}"
+fi
+
+# Check that install PATHs are absolute
+for p in BIN LIB DOC MAN; do
+    var="${p}DIR"
+    eval v='"${'"${var}"'}"'
+    case "${v}" in
+        /*) ;;
+        *)  do_error "'${var}' is not an absolute path: '${v}'"
+    esac
+done
+
+#---------------------------------------------------------------------
+# That's all, folks!
+
+printf "Building up Makefile... "
+var_sed="$( for var_name in ${var_list}; do
+                eval echo 's,@@${var_name}@@,${'"${var_name}"'},g'
+            done 
+          )"
+"${sed}" -r -e "s,@@BINDIR@@,${BINDIR},g
+                s,@@LIBDIR@@,${LIBDIR},g
+                s,@@DOCDIR@@,${DOCDIR},g
+                s,@@MANDIR@@,${MANDIR},g
+                s,@@VERSION@@,${VERSION},g
+                s,@@DATE@@,${DATE},g
+                ${var_sed}
+                s,@@LOCAL@@,${LOCAL_set},g"  Makefile.in >Makefile
+echo "done"
+
+cat <<__EOF__
+
+crosstool-NG configured as follows:
+  PREFIX='${PREFIX}'
+  BINDIR='${BINDIR}'
+  LIBDIR='${LIBDIR}'
+  DOCDIR='${DOCDIR}'
+  MANDIR='${MANDIR}'
+
+Now run:
+  make
+__EOF__
+if [ "${LOCAL_set}" != "y" ]; then
+    printf "  make install\n"
+fi
