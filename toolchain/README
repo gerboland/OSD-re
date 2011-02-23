@@ -1,0 +1,8 @@
+toolchain/
+
+When you run through the crosstool-ng build process as detained in INSTALL, an
+experimental toolchain will be placed here.
+
+For future cross-compiling, it'll be worth adding 
+  toolchain/arm-osd-linux-uclibcgnueabi/bin
+to your $PATH.
