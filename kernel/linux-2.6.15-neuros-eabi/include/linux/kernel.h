@@ -128,6 +128,8 @@ asmlinkage int vprintk(const char *fmt, va_list args)
 	__attribute__ ((format (printf, 1, 0)));
 asmlinkage int printk(const char * fmt, ...)
 	__attribute__ ((format (printf, 1, 2)));
+asmlinkage int printk_unfiltered(const char *fmt, ...)
+	__attribute__ ((format (printf, 1, 2)));
 #else
 static inline int vprintk(const char *s, va_list args)
 	__attribute__ ((format (printf, 1, 0)));
@@ -135,7 +137,33 @@ static inline int vprintk(const char *s, va_list args) { return 0; }
 static inline int printk(const char *s, ...)
 	__attribute__ ((format (printf, 1, 2)));
 static inline int printk(const char *s, ...) { return 0; }
+static inline int printk_unfiltered(const char *s, ...)
+	__attribute__ ((format (printf, 1, 2)));
+static inline int printk_unfiltered(const char *s, ...) { return 0; }
 #endif
+
+#if defined(CONFIG_PRINTK_VERBOSITY) && CONFIG_PRINTK_VERBOSITY > 0
+/*
+ * The idea here is to wrap the actual printk function with a macro which
+ * will filter out all messages above a certain verbosity level. Because
+ * the if condition evaluates to a constant expression the compiler will be
+ * able to eliminate it and the resulting kernel image will be smaller.
+ */
+
+#include <linux/stringify.h>
+
+#define PRINTK_FILTER(fmt) (							\
+	(((const char *)(fmt))[0] != '<' && CONFIG_PRINTK_VERBOSITY >= 4) ||	\
+	(((const char *)(fmt))[0] == '<' && 					\
+	 ((const char *)(fmt))[1] <= *__stringify(CONFIG_PRINTK_VERBOSITY))	\
+)
+
+#define printk(fmt, ...) ( 							\
+	(!__builtin_constant_p(PRINTK_FILTER((fmt))) || PRINTK_FILTER((fmt))) ?	\
+		printk((fmt), ##__VA_ARGS__) : 0				\
+)
+
+#endif /* CONFIG_PRINTK_VERBOSITY */
 
 unsigned long int_sqrt(unsigned long);
 

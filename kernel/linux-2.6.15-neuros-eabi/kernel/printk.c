@@ -500,37 +500,6 @@ __attribute__((weak)) unsigned long long printk_clock(void)
 	return sched_clock();
 }
 
-/**
- * printk - print a kernel message
- * @fmt: format string
- *
- * This is printk.  It can be called from any context.  We want it to work.
- *
- * We try to grab the console_sem.  If we succeed, it's easy - we log the output and
- * call the console drivers.  If we fail to get the semaphore we place the output
- * into the log buffer and return.  The current holder of the console_sem will
- * notice the new output in release_console_sem() and will send it to the
- * consoles before releasing the semaphore.
- *
- * One effect of this deferred printing is that code which calls printk() and
- * then changes console_loglevel may break. This is because console_loglevel
- * is inspected when the actual printing occurs.
- *
- * See also:
- * printf(3)
- */
-
-asmlinkage int printk(const char *fmt, ...)
-{
-	va_list args;
-	int r;
-
-	va_start(args, fmt);
-	r = vprintk(fmt, args);
-	va_end(args);
-
-	return r;
-}
 
 /* cpu currently holding logbuf_lock */
 static volatile unsigned int printk_cpu = UINT_MAX;
@@ -651,7 +620,7 @@ out:
 	preempt_enable();
 	return printed_len;
 }
-EXPORT_SYMBOL(printk);
+
 EXPORT_SYMBOL(vprintk);
 
 #else
@@ -710,6 +679,7 @@ int __init add_preferred_console(char *name, int idx, char *options)
 	c->index = idx;
 	return 0;
 }
+
 
 /**
  * acquire_console_sem - lock the console system for exclusive use.
@@ -1062,3 +1032,60 @@ int printk_ratelimit(void)
 				printk_ratelimit_burst);
 }
 EXPORT_SYMBOL(printk_ratelimit);
+
+/**
+ * printk - print a kernel message
+ * @fmt: format string
+ *
+ * This is printk.  It can be called from any context.  We want it to work.
+ *
+ * Note that depending on the kernel configuration printk might be wrapped by
+ * a macro which will filter out messages above a certain verbosity level.
+ * In cases where it's important that the message will get through independenly
+ * of the configuration setting printk_unfiltered should be used instead.
+ *
+ * We try to grab the console_sem.  If we succeed, it's easy - we log the output and
+ * call the console drivers.  If we fail to get the semaphore we place the output
+ * into the log buffer and return.  The current holder of the console_sem will
+ * notice the new output in release_console_sem() and will send it to the
+ * consoles before releasing the semaphore.
+ *
+ * One effect of this deferred printing is that code which calls printk() and
+ * then changes console_loglevel may break. This is because console_loglevel
+ * is inspected when the actual printing occurs.
+ *
+ * See also:
+ * printf(3)
+ */
+
+/*
+ * We need to #undef the printk macro from <linux/kernel.h> because
+ * it would otherwise conflict with the function implementation.
+ */
+#ifdef printk
+# undef printk
+#endif
+
+asmlinkage int printk(const char *fmt, ...)
+{
+	va_list args;
+	int r;
+
+	va_start(args, fmt);
+	r = vprintk(fmt, args);
+	va_end(args);
+
+	return r;
+}
+EXPORT_SYMBOL(printk);
+
+/*
+ * Because printk might be wrapped by a macro which will filter out messages
+ * above a certain verbosity level we provide an unfiltered variant for use
+ * cases where the filtering isn't desired.
+ */
+
+asmlinkage int printk_unfiltered(const char *fmt, ...)
+	__attribute__((alias("printk")));
+EXPORT_SYMBOL(printk_unfiltered);
+
