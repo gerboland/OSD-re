@@ -10,5 +10,5 @@ sysfs		/sys		sysfs	defaults	0	0
 tmpfs		/dev		mdev	exec,nosuid,mode=0755,size=131077	0	0
 devpts		/dev/pts	devpts	defaults,gid=5,mode=620	0	0
 tmpfs           /tmp		tmpfs	size=262144	0	0
-/dev/mtd5	/mnt/OSD	jffs2	defaults	0	0
+/dev/mtdblock5	/mnt/OSD	jffs2	defaults	0	0
 
