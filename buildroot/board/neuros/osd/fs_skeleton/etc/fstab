@@ -1,9 +1,14 @@
 # /etc/fstab: static file system information.
 #
+# Note that /proc, /sysfs, /dev are mounted manually in /etc/init.d/rcS
+# but that their options are required here.
+#
 # <file system>	<mount pt>	<type>	<options>	<dump>	<pass>
-#/dev/root       /		ext2	rw,noauto	0	1
+#/dev/root	/		ext2	rw,noauto	0	1
 proc		/proc		proc	defaults	0	0
-devpts		/dev/pts 	devpts	defaults,gid=5,mode=620	0	0
-tmpfs           /tmp		tmpfs	size=262144	0      0
 sysfs		/sys		sysfs	defaults	0	0
+tmpfs		/dev		mdev	exec,nosuid,mode=0755,size=131077	0	0
+devpts		/dev/pts	devpts	defaults,gid=5,mode=620	0	0
+tmpfs           /tmp		tmpfs	size=262144	0	0
 /dev/mtd5	/mnt/OSD	jffs2	defaults	0	0
+

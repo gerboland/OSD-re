@@ -1,5 +1,32 @@
 #!/bin/sh
 
+# Mount required directories. Due to wanting mdev support on a read-only
+# filesystem, /dev is mounted as a tmpfs filesystem.
+# Note that /dev contains null and console in order for kernel to boot at all!
+mount -n -t proc /proc /proc
+mount -n -t sysfs sysfs /sys
+mount -n -t tmpfs mdev /dev
+
+# Seed /dev with some thigns that we know we need (from busybox-init scripts)
+
+# Not provided by sysfs but needed
+ln -snf /proc/self/fd /dev/fd
+ln -snf fd/0 /dev/stdin
+ln -snf fd/1 /dev/stdout
+ln -snf fd/2 /dev/stderr
+[ -e /proc/kcore ] && ln -snf /proc/kcore /dev/core
+
+mkdir /dev/pts /dev/shm
+
+# Set up mdev to handle hotplug events
+echo "/sbin/mdev" > /proc/sys/kernel/hotplug
+mdev -s                              
+
+#Now mount anything in left fstab
+mount -a
+
+#Set hostname
+/bin/hostname -F /etc/hostname
 
 # Start all init scripts in /etc/init.d
 # executing them in numerical order.
