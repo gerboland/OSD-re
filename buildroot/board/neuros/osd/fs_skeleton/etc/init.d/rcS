@@ -7,12 +7,7 @@ mount -n -t proc /proc /proc
 mount -n -t sysfs sysfs /sys
 mount -n -t tmpfs mdev /dev
 
-# All media will be mounted from /mnt, which is symlink to /var/tmpfs/mnt
-# /var/tmpfs is symlink to /tmp
-mount -n -t tmpfs tmpfs /tmp
-mkdir /mnt/internal
-
-# Seed /dev with some things that we know we need (from busybox-init scripts)
+# Seed /dev with some thigns that we know we need (from busybox-init scripts)
 
 # Not provided by sysfs but needed
 ln -snf /proc/self/fd /dev/fd
@@ -25,7 +20,7 @@ mkdir /dev/pts /dev/shm
 
 # Set up mdev to handle hotplug events
 echo "/sbin/mdev" > /proc/sys/kernel/hotplug
-mdev -s
+mdev -s                              
 
 #Now mount anything in left fstab
 mount -a
