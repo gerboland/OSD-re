@@ -7,6 +7,10 @@ mount -n -t proc /proc /proc
 mount -n -t sysfs sysfs /sys
 mount -n -t tmpfs mdev /dev
 
+# /mnt is symlink to /tmp/mnt to allow creating mount points  with read-only system
+mount -n -t tmpfs tmpfs /tmp
+mkdir /tmp/mnt
+
 # Seed /dev with some thigns that we know we need (from busybox-init scripts)
 
 # Not provided by sysfs but needed
@@ -20,7 +24,7 @@ mkdir /dev/pts /dev/shm
 
 # Set up mdev to handle hotplug events
 echo "/sbin/mdev" > /proc/sys/kernel/hotplug
-mdev -s                              
+mdev -s
 
 #Now mount anything in left fstab
 mount -a
