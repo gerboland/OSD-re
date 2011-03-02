@@ -1,9 +1,8 @@
-# Default Config for Neuros OSD:re
 #
-
-# Confirm platform (handy for OSD:re specific packages)
-BR2_PLATFORM_NTOSD=y
-
+# Automatically generated make config: don't edit
+# Buildroot 2011.02-rc1-gbf4de3d-dirty Configuration
+# Sun Feb 27 15:21:45 2011
+#
 BR2_HAVE_DOT_CONFIG=y
 BR2_arm=y
 # BR2_armeb is not set
