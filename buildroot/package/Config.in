@@ -93,7 +93,6 @@ menu "Graphic libraries and applications (graphic/text)"
 comment "Graphic applications"
 source "package/rrdtool/Config.in"
 
-comment "graphic libraries"
 source "package/directfb/Config.in"
 source "package/directfb-examples/Config.in"
 source "package/divine/Config.in"
@@ -448,6 +447,10 @@ endif
 source "package/wireless_tools/Config.in"
 source "package/wpa_supplicant/Config.in"
 
+endmenu
+
+menu "OSD:re-only packages"
+source "package/OSD-re/Config.in"
 endmenu
 
 menu "Package managers"
