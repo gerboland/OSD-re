@@ -66,10 +66,11 @@ struct stat64 {
 	unsigned long	st_gid;
 
 	unsigned long long	st_rdev;
-	unsigned char   __pad3[4];
+	unsigned char   __pad3[8];	/* Additional padding required for some reason - GERRY */
 
 	long long	st_size;
 	unsigned long	st_blksize;
+	unsigned char   __pad4[4];	/* Additional padding required for some reason - GERRY */
 	unsigned long long st_blocks;	/* Number 512-byte blocks allocated. */
 
 	unsigned long	st_atime;
