@@ -87,7 +87,11 @@ ENTRY(ret_from_fork)
 	b	ret_slow_syscall
 	
 
+	.equ NR_syscalls,0
+#define CALL(x) .equ NR_syscalls,NR_syscalls+1
 #include "calls.S"
+#undef CALL
+#define CALL(x) .long x
 
 /*=============================================================================
  * SWI handler
@@ -125,7 +129,7 @@ ENTRY(vector_swi)
 	 */
 
 #if defined(CONFIG_OABI_COMPAT)
- 
+
 	/*
 	 * If we have CONFIG_OABI_COMPAT then we need to look at the swi
 	 * value to determine if it is an EABI or an old ABI call.
@@ -146,12 +150,11 @@ ENTRY(vector_swi)
 	/*
 	 * Pure EABI user space always put syscall number into scno (r7).
 	 */
-
   A710(	ldr	ip, [lr, #-4]			@ get SWI instruction	)
   A710(	and	ip, ip, #0x0f000000		@ check for SWI		)
   A710(	teq	ip, #0x0f000000						)
-  A710(	bne	.Larm710bug	
-					)
+  A710(	bne	.Larm710bug						)
+
 #elif defined(CONFIG_ARM_THUMB)
 
 	/* Legacy ABI only, possibly thumb mode. */
@@ -188,14 +191,14 @@ ENTRY(vector_swi)
 	 * get the old ABI syscall table address.
 	 */
 	bics	r10, r10, #0xff000000
-	eorne	scno, r10, #0x900000	@ the OABI __NR_SYSCALL_BASE value
+	eorne	scno, r10, #__NR_OABI_SYSCALL_BASE
 	ldrne	tbl, =sys_oabi_call_table
 #elif !defined(CONFIG_AEABI)
 	bic	scno, scno, #0xff000000		@ mask off SWI op-code
 	eor	scno, scno, #__NR_SYSCALL_BASE	@ check OS number
 #endif
 
-	stmdb	sp!, {r4, r5}			@ push fifth and sixth args CAREFUL GERRY! CHECK PATCH
+	stmdb	sp!, {r4, r5}			@ push fifth and sixth args
 	tst	ip, #_TIF_SYSCALL_TRACE		@ are we tracing syscalls?
 	bne	__sys_trace
 
@@ -215,11 +218,13 @@ ENTRY(vector_swi)
 	 * context switches, and waiting for our parent to respond.
 	 */
 __sys_trace:
+/*	mov	r2, scno*/
 	add	r1, sp, #S_OFF
 	mov	r0, #0				@ trace entry [IP = 0]
 	bl	syscall_trace
 
 	adr	lr, __sys_trace_return		@ return address
+	mov	scno, r0			@ syscall number (possibly new)
 	add	r1, sp, #S_R0 + S_OFF		@ pointer to regs
 	cmp	scno, #NR_syscalls		@ check upper syscall limit
 	ldmccia	r1, {r0 - r3}			@ have to reload r0 - r3
@@ -228,6 +233,7 @@ __sys_trace:
 
 __sys_trace_return:
 	str	r0, [sp, #S_R0 + S_OFF]!	@ save returned r0
+/*	mov	r2, scno*/
 	mov	r1, sp
 	mov	r0, #1				@ trace exit [IP = 1]
 	bl	syscall_trace
@@ -241,9 +247,22 @@ __cr_alignment:
 #endif
 	.ltorg
 
+/*
+ * This is the syscall table declaration for native ABI syscalls.
+ * With EABI a couple syscalls are obsolete and defined as sys_ni_syscall.
+ */
+#define ABI(native, compat) native
+#ifdef CONFIG_AEABI
+#define OBSOLETE(syscall) sys_ni_syscall
+#else
+#define OBSOLETE(syscall) syscall
+#endif
+
 	.type	sys_call_table, #object
 ENTRY(sys_call_table)
 #include "calls.S"
+#undef ABI
+#undef OBSOLETE
 
 /*============================================================================
  * Special system call wrappers
@@ -252,8 +271,7 @@ ENTRY(sys_call_table)
 @ r8 = syscall table
 		.type	sys_syscall, #function
 sys_syscall:
-#ifndef CONFIG_AEABI
-		eor	scno, r0, #__NR_SYSCALL_BASE
+		eor	scno, r0, #__NR_OABI_SYSCALL_BASE
 		cmp	scno, #__NR_syscall - __NR_SYSCALL_BASE
 		cmpne	scno, #NR_syscalls	@ check range
 		stmloia	sp, {r5, r6}		@ shuffle args
@@ -262,7 +280,6 @@ sys_syscall:
 		movlo	r2, r3
 		movlo	r3, r4
 		ldrlo	pc, [tbl, scno, lsl #2]
-#endif
 		b	sys_ni_syscall
 
 sys_fork_wrapper:
@@ -361,30 +378,16 @@ sys_oabi_readahead:
 
 /*
  * Let's declare a second syscall table for old ABI binaries
- * with some entries replaced by the required wrapper.
+ * using the compatibility syscall entries.
  */
-
-#define sys_pread64_wrapper	sys_oabi_pread64
-#define sys_pwrite64_wrapper	sys_oabi_pwrite64
-#define sys_truncate64		sys_oabi_truncate64
-#define sys_ftruncate64		sys_oabi_ftruncate64
-#define sys_stat64		sys_oabi_stat64
-#define sys_lstat64		sys_oabi_lstat64
-#define sys_fstat64		sys_oabi_fstat64
-#define sys_fcntl64		sys_oabi_fcntl64
-#define sys_readahead		sys_oabi_readahead
-#define sys_epoll_ctl		sys_oabi_epoll_ctl
-#define sys_epoll_wait		sys_oabi_epoll_wait
-#define sys_ipc			sys_oabi_ipc
-#define sys_semtimedop		sys_oabi_semtimedop
-#define sys_semop		sys_oabi_semop
-
-#define __syscall_start		__oabi_syscall_start
-#define __syscall_end		__oabi_syscall_end
+#define ABI(native, compat) compat
+#define OBSOLETE(syscall) syscall
 
 	.type	sys_oabi_call_table, #object
 ENTRY(sys_oabi_call_table)
 #include "calls.S"
+#undef ABI
+#undef OBSOLETE
 
 #endif
 
