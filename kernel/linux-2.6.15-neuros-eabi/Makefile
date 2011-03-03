@@ -200,7 +200,7 @@ SUBARCH := arm
 # Note: Some architectures assign CROSS_COMPILE in their arch/*/Makefile
 
 ARCH		?= $(SUBARCH)
-CROSS_COMPILE	?= arm-unknown-linux-uclibcgnueabi-
+CROSS_COMPILE	?= arm-osd-linux-uclibcgnueabi-
 
 # Architecture as present in compile.h
 UTS_MACHINE := $(ARCH)
