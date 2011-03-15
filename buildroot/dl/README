@@ -1,0 +1,9 @@
+/dl - this folder is empty*
+
+This folder holds all tarballs of source code downloaded by build systems 
+(both buildroot and crosstool-ng). This includes archives of any CVS, SVN,
+GIT, BZR or or other supported repo which is cloned/checked-out.
+
+* It's empty to start, until you set a build going of course. Also it's never
+wholly empty since this file is in it. One of those "this page is intentionally
+kept blank" messages.
