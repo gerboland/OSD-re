@@ -261,4 +261,3 @@ comment "support gamin - disabled (requires gamin)"
 	depends on !BR2_PACKAGE_GAMIN
 
 endmenu
-
