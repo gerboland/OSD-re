@@ -1,5 +1,6 @@
 /output
 /dl/*
+!/dl/README
 /.auto.deps
 /.config.cmd
 /.config.old
