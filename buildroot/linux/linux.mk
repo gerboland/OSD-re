@@ -6,10 +6,15 @@
 LINUX26_VERSION=$(call qstrip,$(BR2_LINUX_KERNEL_VERSION))
 
 # Compute LINUX26_SOURCE and LINUX26_SITE from the configuration
-ifeq ($(LINUX26_VERSION),custom)
+ifeq ($(LINUX26_VERSION),custom_tarball)
+# If source from tarball
 LINUX26_TARBALL:=$(call qstrip,$(BR2_LINUX_KERNEL_CUSTOM_TARBALL_LOCATION))
 LINUX26_SITE:=$(dir $(LINUX26_TARBALL))
 LINUX26_SOURCE:=$(notdir $(LINUX26_TARBALL))
+# or else source is located somewhere else on filesystem
+else ifeq ($(LINUX26_VERSION),custom_directory)
+LINUX26_SITE:=$(call qstrip,$(BR2_LINUX_KERNEL_CUSTOM_DIRECTORY_LOCATION))
+# or else is plain kernel source available online
 else
 LINUX26_SOURCE:=linux-$(LINUX26_VERSION).tar.bz2
 LINUX26_SITE:=$(BR2_KERNEL_MIRROR)/linux/kernel/v2.6/
@@ -70,21 +75,34 @@ LINUX26_IMAGE_PATH=$(KERNEL_ARCH_PATH)/boot/$(LINUX26_IMAGE_NAME)
 endif
 endif # BR2_LINUX_KERNEL_VMLINUX
 
-# Download
+# Download/Check
 $(LINUX26_DIR)/.stamp_downloaded:
+ifeq ($(LINUX26_VERSION),custom_directory)
+	@$(call MESSAGE,"Checking kernel source directory specified: '$(LINUX26_SITE)'")
+ifeq "$(wildcard $(LINUX26_SITE) )" ""
+	$(error Kernel source directory specified missing, check BR2_LINUX_KERNEL_CUSTOM_DIRECTORY_LOCATION)
+endif
+else
 	@$(call MESSAGE,"Downloading kernel")
 	$(call DOWNLOAD,$(LINUX26_SITE),$(LINUX26_SOURCE))
+endif
 	$(foreach patch,$(filter ftp://% http://%,$(LINUX26_PATCH)),\
 		$(call DOWNLOAD,$(dir $(patch)),$(notdir $(patch)))$(sep))
 	mkdir -p $(@D)
 	touch $@
 
-# Extraction
+# Extraction/Copy
 $(LINUX26_DIR)/.stamp_extracted: $(LINUX26_DIR)/.stamp_downloaded
+ifeq ($(LINUX26_VERSION),custom_directory)
+	@$(call MESSAGE,"Copying kernel from specified directory - existing changes will be overwritten")
+	mkdir -p $(@D)
+	cp -r $(LINUX26_SITE)/* $(@D)
+else
 	@$(call MESSAGE,"Extracting kernel")
 	mkdir -p $(@D)
 	$(Q)$(INFLATE$(suffix $(LINUX26_SOURCE))) $(DL_DIR)/$(LINUX26_SOURCE) | \
 		tar -C $(@D) $(TAR_STRIP_COMPONENTS)=1 $(TAR_OPTIONS) -
+endif
 	$(Q)touch $@
 
 # Patch
