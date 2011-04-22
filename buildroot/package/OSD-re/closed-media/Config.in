@@ -1,0 +1,122 @@
+menu "OSD Media System (DSP-based) - closed binaries"
+
+comment "Audio support"
+config BR2_PACKAGE_OSDRE_CLOSED_MEDIA_PCM
+        bool "PCM audio support"
+        select BR2_PACKAGE_OSDRE_CLOSED_HWDRIVERS_AIC23
+        help
+          Enable ARM access to audio. Requires AIC23 chip.
+comment "PCM audio requires the AIC23 chip driver which has been auto-selected"
+        depends on BR2_PACKAGE_OSDRE_CLOSED_MEDIA_PCM
+
+comment "Audio/Video Decoders"
+
+config BR2_PACKAGE_OSDRE_CLOSED_MEDIA_DEC_MPEG2_PCM
+        bool "DM320 MPEG2 + PCM Decoder"
+        select BR2_PACKAGE_OSDRE_CLOSED_MEDIA_IMANAGE
+
+config BR2_PACKAGE_OSDRE_CLOSED_MEDIA_DEC_MPEG4_PCM
+        bool "DM320 MPEG4-SP + PCM Decoder"
+        select BR2_PACKAGE_OSDRE_CLOSED_MEDIA_IMANAGE
+
+config BR2_PACKAGE_OSDRE_CLOSED_MEDIA_DEC_MPEG4_G711
+        bool "DM320 MPEG4 + G.711 + G.726 Decoder"
+        select BR2_PACKAGE_OSDRE_CLOSED_MEDIA_IMANAGE
+
+config BR2_PACKAGE_OSDRE_CLOSED_MEDIA_DEC_DIVX_PCM
+        bool "DM320 DivX 3.11 + PCM Decoder"
+        select BR2_PACKAGE_OSDRE_CLOSED_MEDIA_IMANAGE
+
+config BR2_PACKAGE_OSDRE_CLOSED_MEDIA_DEC_WMV_WMA_PCM
+        bool "DM320 WMV + WMA + PCM Decoder"
+        select BR2_PACKAGE_OSDRE_CLOSED_MEDIA_IMANAGE
+
+comment "***Following 3 Decoders require additional media frameworks (auto-selected for you)***"
+
+config BR2_PACKAGE_OSDRE_CLOSED_MEDIA_DEC_DIVX
+        bool "DIVX311 Video Decoder Codec Plugin"
+        select BR2_PACKAGE_OSDRE_CLOSED_MEDIA_IDECODE
+
+config BR2_PACKAGE_OSDRE_CLOSED_MEDIA_DEC_MPEG2
+        bool "MPEG2 Video Decoder Codec Plugin"
+        select BR2_PACKAGE_OSDRE_CLOSED_MEDIA_IDECODE
+
+config BR2_PACKAGE_OSDRE_CLOSED_MEDIA_DEC_WMV
+        bool "WMV Video Decoder Codec Plugin"
+        select BR2_PACKAGE_OSDRE_CLOSED_MEDIA_IDECODE
+
+
+comment "Audio/Video Encoders"
+
+config BR2_PACKAGE_OSDRE_CLOSED_MEDIA_ENC_MPEG4_PCM
+        bool "DM320 MPEG4 (QVGA+VGA) + PCM Encoders"
+        select BR2_PACKAGE_OSDRE_CLOSED_MEDIA_IMANAGE
+
+config BR2_PACKAGE_OSDRE_CLOSED_MEDIA_ENC_MPEG4_G711
+        bool "DM320 MPEG4 (QVGA+VGA) + G.711 + G.726 Encoders"
+        select BR2_PACKAGE_OSDRE_CLOSED_MEDIA_IMANAGE
+
+
+comment "Video Encoders + Audio Encoder/Decoder"
+
+config BR2_PACKAGE_OSDRE_CLOSED_MEDIA_ENCDEC_MPEG4_G711
+        bool "DM320 MPEG4 Encoder + G.711 + G.726 Encoder/Decoder"
+        select BR2_PACKAGE_OSDRE_CLOSED_MEDIA_IMANAGE
+
+
+comment "Image Encoding/Decoding"
+
+config BR2_PACKAGE_OSDRE_CLOSED_MEDIA_DEC_JPEG
+        bool "DM320 JPEG Image Decoder"
+        select BR2_PACKAGE_OSDRE_CLOSED_MEDIA_IMANAGE
+        
+config BR2_PACKAGE_OSDRE_CLOSED_MEDIA_ENC_JPEG
+        bool "DM320 JPEG Image Encoder"
+        select BR2_PACKAGE_OSDRE_CLOSED_MEDIA_IMANAGE
+
+config BR2_PACKAGE_OSDRE_CLOSED_MEDIA_ENCDEC_JPEG
+        bool "DM320 JPEG Image Encoder/Decoder"
+        select BR2_PACKAGE_OSDRE_CLOSED_MEDIA_IMANAGE
+
+config BR2_PACKAGE_OSDRE_CLOSED_MEDIA_DEC_JPEG_PCM
+        bool "DM320 JPEG Image + PCM Decoder"
+        depends on BR2_PACKAGE_OSDRE_CLOSED_HWDRIVERS_AIC23
+        select BR2_PACKAGE_OSDRE_CLOSED_MEDIA_IMANAGE
+
+comment "PCM audio requires the AIC23 chip driver"
+        depends on !BR2_PACKAGE_OSDRE_CLOSED_MEDIA_AIC23
+
+config BR2_PACKAGE_OSDRE_CLOSED_MEDIA_DEC_IMAGE
+        bool "IMAGE Decode Plugin"
+        select BR2_PACKAGE_OSDRE_CLOSED_MEDIA_IDECODE
+
+
+comment "Core Frameworks (often autoselected by choices above)"
+
+config BR2_PACKAGE_OSDRE_CLOSED_MEDIA_IMANAGE
+        bool "imanage"
+        help
+          Closed kernel module with tools all Ingenient media modules use.
+
+config BR2_PACKAGE_OSDRE_CLOSED_MEDIA_IVIDIO
+        bool "ividio"
+        select BR2_PACKAGE_OSDRE_CLOSED_MEDIA_IMANAGE
+        help
+          Closed kernel module for all video I/O, including PAL/NTSC control,
+          Preview Engine, Video Capture and Window Display.
+
+config BR2_PACKAGE_OSDRE_CLOSED_MEDIA_IDECODE
+        bool "idecode"
+        select BR2_PACKAGE_OSDRE_CLOSED_MEDIA_IVIDIO
+        help
+          Closed kernel module with tools many Ingenient media modules use
+          to decode video for display.
+
+config BR2_PACKAGE_OSDRE_CLOSED_MEDIA_IENCODE
+        bool "iencode"
+        select BR2_PACKAGE_OSDRE_CLOSED_MEDIA_IVIDIO
+        help
+          Closed kernel module with tools many Ingenient media modules use
+          to encode video for storage.
+
+endmenu
