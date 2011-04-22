@@ -1,0 +1,33 @@
+menu "OSD Hardware Drivers - closed binaries"
+
+config BR2_PACKAGE_OSDRE_CLOSED_HWDRIVERS_NEUROSRTC
+        bool "MSP430 chip support - IR and clock driver"
+        help
+          Closed kernel module for the MSP430 chip, which enables IR send
+          and receive support, and the real time clock.
+        
+config BR2_PACKAGE_OSDRE_CLOSED_HWDRIVERS_TVP5150
+        bool "TVP5150 chip support - Video input controller chip driver"
+        help
+          Closed kernel module for the TVP5150 chip, which is a ADC which 
+          converts the PAL/NTSC video input into CCD-style data for the DSP.
+
+config BR2_PACKAGE_OSDRE_CLOSED_HWDRIVERS_AIC23
+        bool "AIC23 - Audio chip driver"
+        help
+          Closed kernel module for the AIC23 chip, which inputs and outputs
+          audio.
+
+comment "Enable the PCM media codec driver for actual sound support"
+        depends on BR2_PACKAGE_OSDRE_CLOSED_HWDRIVERS_AIC23
+
+config BR2_PACKAGE_OSDRE_CLOSED_HWDRIVERS_ITFB
+        bool "Framebuffer support"
+        select BR2_PACKAGE_OSDRE_CLOSED_MEDIA_IMANAGE
+        help
+          Closed kernel module to enable the framebuffer at /dev/fb0
+
+comment "The framebuffer requires the Imanage framework (auto-selected)"
+        depends on BR2_PACKAGE_OSDRE_CLOSED_MEDIA_IMANAGE
+
+endmenu
