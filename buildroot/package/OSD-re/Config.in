@@ -1,4 +1,4 @@
+# This folder contains all Neuros OSD specific packages
 
-
-#source "package/OSD-re/pkg_name/Config.in"
-
+source "package/OSD-re/closed-hwdrivers/Config.in"
+source "package/OSD-re/closed-media/Config.in"
