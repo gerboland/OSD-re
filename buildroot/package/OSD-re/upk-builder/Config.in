@@ -1,0 +1,6 @@
+config BR2_PACKAGE_OSDRE_UPK_BUILDER
+       bool "upk-builder"
+       help
+         UPK files are used to update the firmware on the Neuros OSD.
+
+	 https://github.com/gerboland/osd-upk-builder

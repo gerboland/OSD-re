@@ -2,3 +2,5 @@
 
 source "package/OSD-re/closed-hwdrivers/Config.in"
 source "package/OSD-re/closed-media/Config.in"
+
+source "package/OSD-re/upk-builder/Config.in"
