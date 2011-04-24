@@ -1,0 +1,3 @@
+zreladdr-$(CONFIG_ARCH_NTOSD_DM320)      := 0x01108000
+params_phys-$(CONFIG_ARCH_NTOSD_DM320)   := 0x01100100
+initrd_phys-$(CONFIG_ARCH_NTOSD_DM320)   := 0x01800000
