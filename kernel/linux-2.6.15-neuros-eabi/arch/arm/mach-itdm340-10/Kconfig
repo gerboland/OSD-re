@@ -1,4 +1,0 @@
-
-config INGENIENT_BSP
-	bool
-	default y
