@@ -47,12 +47,6 @@ config BR2_LINUX_KERNEL_CUSTOM_TARBALL
 	  This option allows to specify the http or ftp location of a
 	  specific kernel source tarball
 
-config BR2_LINUX_KERNEL_CUSTOM_DIRECTORY
-	bool "Custom directory"
-	help
-	  This options allows to specify a directory where the kernel
-	  source is located.
-
 endchoice
 
 config BR2_LINUX_KERNEL_CUSTOM_VERSION_VALUE
@@ -64,17 +58,12 @@ config BR2_LINUX_KERNEL_CUSTOM_TARBALL_LOCATION
 	string "URL of custom kernel tarball"
 	depends on BR2_LINUX_KERNEL_CUSTOM_TARBALL
 
-config BR2_LINUX_KERNEL_CUSTOM_DIRECTORY_LOCATION
-	string "Path to kernel source"
-	depends on BR2_LINUX_KERNEL_CUSTOM_DIRECTORY
-
 config BR2_LINUX_KERNEL_VERSION
 	string
 	default "2.6.37" if BR2_LINUX_KERNEL_2_6_37
 	default BR2_DEFAULT_KERNEL_HEADERS if BR2_LINUX_KERNEL_SAME_AS_HEADERS
 	default BR2_LINUX_KERNEL_CUSTOM_VERSION_VALUE if BR2_LINUX_KERNEL_CUSTOM_VERSION
-	default "custom_tarball" if BR2_LINUX_KERNEL_CUSTOM_TARBALL
-	default "custom_directory" if BR2_LINUX_KERNEL_CUSTOM_DIRECTORY
+	default "custom" if BR2_LINUX_KERNEL_CUSTOM_TARBALL
 
 #
 # Patch selection
