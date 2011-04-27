@@ -11,7 +11,7 @@ CLOSED_MEDIA_MODULE_SITE:=$(CLOSED_MEDIA_SITE)/kernels/kos_64M
 CLOSED_MEDIA_MODULE_FILES:=pcm.ko mpeg2_pcm_dec.ko mpeg4_pcm_dec.ko mpeg4sp_g7xx_dec.ko \
 divx311_pcm_dec.ko wmv_wma_dec.ko divx311.ko mpeg2.ko wmv.ko mpeg4_pcm_enc.ko \
 mpeg4sp_g7xx_enc.ko mpeg4sp_g7xx_codec.ko image_dec.ko image_enc.ko jpeg_codec.ko \
-jpeg_pcm_dec.ko image.ko imanage.ko ividio.ko idecode.ko iencode.ko
+jpeg_pcm_dec.ko image.ko imanage.ko ividio.ko iaudio.ko idecode.ko iencode.ko
 CLOSED_MEDIA_HEADER_SITE:=$(CLOSED_MEDIA_SITE)/toolchain/arm-linux/include/linux
 CLOSED_MEDIA_HEADER_FILES:=imanage.h imanage_ioctl.h icapture.h ividio.h idecode.h \
 idecode_ioctl.h iencode.h iencode_ioctl.h ierror.h iqueue.h codecmap.h mcbsp.h
@@ -69,7 +69,10 @@ $(CLOSED_MEDIA_DIR)/.configured: $(CLOSED_MEDIA_DIR)/.source
 	done
 	touch $@
 
-closed-media: $(CLOSED_MEDIA_DIR)/.configured
+$(CLOSED_MEDIA_DIR)/.installed: $(CLOSED_MEDIA_DIR)/.configured
+	touch $@
+
+closed-media: $(CLOSED_MEDIA_DIR)/.installed
 # Install modules to target
 	@$(call MESSAGE,"closed-media - Installing modules to target")
 	mkdir -p $(TARGET_DIR)/$(CLOSED_MEDIA_TARGET_MODULE_PATH)
@@ -128,6 +131,7 @@ PACKAGE_OSDRE_MEDIA-$(BR2_PACKAGE_OSDRE_CLOSED_MEDIA_DEC_JPEG_PCM) += jpeg_pcm_d
 PACKAGE_OSDRE_MEDIA-$(BR2_PACKAGE_OSDRE_CLOSED_MEDIA_DEC_IMAGE) += image.ko
 PACKAGE_OSDRE_MEDIA-$(BR2_PACKAGE_OSDRE_CLOSED_MEDIA_IMANAGE) += imanage.ko
 PACKAGE_OSDRE_MEDIA-$(BR2_PACKAGE_OSDRE_CLOSED_MEDIA_IVIDIO) += ividio.ko
+PACKAGE_OSDRE_MEDIA-$(BR2_PACKAGE_OSDRE_CLOSED_MEDIA_IAUDIO) += iaudio.ko
 PACKAGE_OSDRE_MEDIA-$(BR2_PACKAGE_OSDRE_CLOSED_MEDIA_IDECODE) += idecode.ko
 PACKAGE_OSDRE_MEDIA-$(BR2_PACKAGE_OSDRE_CLOSED_MEDIA_IENCODE) += iencode.ko
 

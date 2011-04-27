@@ -4,10 +4,14 @@ comment "Audio support"
 config BR2_PACKAGE_OSDRE_CLOSED_MEDIA_PCM
         bool "PCM audio support"
         select BR2_PACKAGE_OSDRE_CLOSED_HWDRIVERS_AIC23
+        select BR2_PACKAGE_OSDRE_CLOSED_MEDIA_IENCODE
+        select BR2_PACKAGE_OSDRE_CLOSED_MEDIA_IDECODE
+        select BR2_PACKAGE_OSDRE_CLOSED_MEDIA_IAUDIO
         help
-          Enable ARM access to audio. Requires AIC23 chip.
-comment "PCM audio requires the AIC23 chip driver which has been auto-selected"
-        depends on BR2_PACKAGE_OSDRE_CLOSED_MEDIA_PCM
+          Enable ARM access to audio. Requires AIC23 chip and all the
+          closed source imedia frameworks.
+comment "PCM audio requires the AIC23 chip driver - activate it in closed-hwdrivers"
+        depends on !BR2_PACKAGE_OSDRE_CLOSED_HWDRIVERS_AIC23
 
 comment "Audio/Video Decoders"
 
@@ -97,6 +101,12 @@ config BR2_PACKAGE_OSDRE_CLOSED_MEDIA_IMANAGE
         bool "imanage"
         help
           Closed kernel module with tools all Ingenient media modules use.
+
+config BR2_PACKAGE_OSDRE_CLOSED_MEDIA_IAUDIO
+        bool "iaudio"
+        select BR2_PACKAGE_OSDRE_CLOSED_MEDIA_IMANAGE
+        help
+          Closed kernel module for all audio I/O.
 
 config BR2_PACKAGE_OSDRE_CLOSED_MEDIA_IVIDIO
         bool "ividio"
