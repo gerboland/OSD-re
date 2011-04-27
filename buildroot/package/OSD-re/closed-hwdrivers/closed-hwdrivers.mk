@@ -66,7 +66,10 @@ $(CLOSED_HWDRIVERS_DIR)/.configured: $(CLOSED_HWDRIVERS_DIR)/.source
 	done
 	touch $@
 
-closed-hwdrivers: closed-media $(CLOSED_HWDRIVERS_DIR)/.configured
+$(CLOSED_HWDRIVERS_DIR)/.installed: $(CLOSED_HWDRIVERS_DIR)/.configured
+	touch $@
+
+closed-hwdrivers: closed-media $(CLOSED_HWDRIVERS_DIR)/.installed
 # Install modules to target
 	@$(call MESSAGE,"closed-hwdrivers - Installing modules to target")
 
@@ -78,7 +81,7 @@ ifeq ($(BR2_PACKAGE_OSDRE_CLOSED_HWDRIVERS_TVP5150),y)
 	mkdir -p $(TARGET_DIR)/$(CLOSED_HWDRIVERS_TARGET_MODULE_PATH)/chips
 	cp $(CLOSED_HWDRIVERS_DIR)/tvp5150.ko $(TARGET_DIR)/$(CLOSED_HWDRIVERS_TARGET_MODULE_PATH)/chips/
 endif
-ifeq ($(BR2_PACKAGE_OSDRE_CLOSED_HWDRIVERS_AIC23)),y)
+ifeq ($(BR2_PACKAGE_OSDRE_CLOSED_HWDRIVERS_AIC23),y)
 	mkdir -p $(TARGET_DIR)/$(CLOSED_HWDRIVERS_TARGET_MODULE_PATH)/chips
 	cp $(CLOSED_HWDRIVERS_DIR)/aic23.ko $(TARGET_DIR)/$(CLOSED_HWDRIVERS_TARGET_MODULE_PATH)/chips/
 endif

@@ -19,7 +19,7 @@ config BR2_PACKAGE_OSDRE_CLOSED_HWDRIVERS_AIC23
           audio.
 
 comment "Enable the PCM media codec driver for actual sound support"
-        depends on BR2_PACKAGE_OSDRE_CLOSED_HWDRIVERS_AIC23
+        depends on !BR2_PACKAGE_OSDRE_CLOSED_MEDIA_PCM
 
 config BR2_PACKAGE_OSDRE_CLOSED_HWDRIVERS_ITFB
         bool "Framebuffer support"
