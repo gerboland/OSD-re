@@ -38,7 +38,7 @@ choice
 	prompt "SQLite 3 support"
 	default BR2_PACKAGE_QT_SQLITE_NONE
 	help
-	  Select SQLite support
+	  Select SQLite support.
 
 config BR2_PACKAGE_QT_SQLITE_NONE
 	bool "No sqlite support"
