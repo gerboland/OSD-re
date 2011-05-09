@@ -7,11 +7,32 @@ LINUX26_VERSION=$(call qstrip,$(BR2_LINUX_KERNEL_VERSION))
 
 # Compute LINUX26_SOURCE and LINUX26_SITE from the configuration
 ifeq ($(LINUX26_VERSION),custom)
+
+ifeq ($(BR2_LINUX_KERNEL_CUSTOM_REPOSITORY),y)
+LINUX26_SITE:=$(call qstrip, $(BR2_LINUX_KERNEL_CUSTOM_REPOSITORY_LOCATION))
+LINUX26_DL_VERSION:=$(call qstrip, $(BR2_LINUX_KERNEL_CUSTOM_REPOSITORY_VERSION))
+
+ifeq ($(findstring svn://,$(LINUX26_SITE)),svn://)
+LINUX26_SITE_METHOD:=svn
+LINUX26_DL_DIR:=linux-$(notdir $(LINUX26_SITE))
+else
+LINUX26_SITE_METHOD:=git
+LINUX26_DL_DIR:=linux-$(call qstrip, $(BR2_LINUX_KERNEL_CUSTOM_REPOSITORY_VERSION))
+LINUX26_BRANCH:=$(LINUX26_DL_VERSION)
+endif
+
+LINUX26_BASE_NAME:=$(LINUX26_DL_DIR)
+LINUX26_SOURCE:=$(LINUX26_DL_DIR).tar.gz
+else
+
 ifneq ($(BR2_LINUX_KERNEL_CUSTOM_TREE),y)
 LINUX26_TARBALL:=$(call qstrip,$(BR2_LINUX_KERNEL_CUSTOM_TARBALL_LOCATION))
 LINUX26_SITE:=$(dir $(LINUX26_TARBALL))
 LINUX26_SOURCE:=$(notdir $(LINUX26_TARBALL))
 endif
+
+endif
+
 else
 LINUX26_SOURCE:=linux-$(LINUX26_VERSION).tar.bz2
 LINUX26_SITE:=$(BR2_KERNEL_MIRROR)/linux/kernel/v2.6/
@@ -168,6 +189,14 @@ $(LINUX26_BUILD_DIR)/.stamp_installed: $(LINUX26_BUILD_DIR)/.stamp_compiled
 		rm -f $(TARGET_DIR)/lib/modules/$(LINUX26_VERSION_PROBED)/source ;	\
 	fi
 	$(Q)touch $@
+
+
+$(LINUX26_BUILD_DIR)/.stamp_downloaded: PKG=LINUX26
+$(LINUX26_BUILD_DIR)/.stamp_extracted: PKG=LINUX26
+$(LINUX26_BUILD_DIR)/.stamp_patched: PKG=LINUX26
+$(LINUX26_BUILD_DIR)/.stamp_configured: PKG=LINUX26
+$(LINUX26_BUILD_DIR)/.stamp_compiled: PKG=LINUX26
+$(LINUX26_BUILD_DIR)/.stamp_installed: PKG=LINUX26
 
 linux linux26: host-module-init-tools $(LINUX26_DEPENDENCIES) $(LINUX26_BUILD_DIR)/.stamp_installed
 

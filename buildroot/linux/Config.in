@@ -53,6 +53,10 @@ config BR2_LINUX_KERNEL_CUSTOM_TREE
 	help
 	  This option allows use of an already unpacked linux tree.
 
+config BR2_LINUX_KERNEL_CUSTOM_REPOSITORY
+	bool "Custom source repository"
+	help
+	  This option allows to specify the svn or git repository.
 
 endchoice
 
@@ -69,12 +73,25 @@ config BR2_LINUX_KERNEL_CUSTOM_PATH
 	string "PATH of custom kernel tree"
 	depends on BR2_LINUX_KERNEL_CUSTOM_TREE
 
+config BR2_LINUX_KERNEL_CUSTOM_REPOSITORY_LOCATION
+	string "URL of custom kernel repository"
+	depends on BR2_LINUX_KERNEL_CUSTOM_REPOSITORY
+	help
+	  This is either the clone URL of GIT or trunk/tag/branch URL of SVN. 
+
+config BR2_LINUX_KERNEL_CUSTOM_REPOSITORY_VERSION
+	string "revision(svn/git), tag(git) or branch(git) of custom kernel source"
+	depends on BR2_LINUX_KERNEL_CUSTOM_REPOSITORY
+	default "HEAD"
+	help
+	  Tag or branch of GIT repository should be filled in here.
+
 config BR2_LINUX_KERNEL_VERSION
 	string
 	default "2.6.37" if BR2_LINUX_KERNEL_2_6_37
 	default BR2_DEFAULT_KERNEL_HEADERS if BR2_LINUX_KERNEL_SAME_AS_HEADERS
 	default BR2_LINUX_KERNEL_CUSTOM_VERSION_VALUE if BR2_LINUX_KERNEL_CUSTOM_VERSION
-	default "custom" if BR2_LINUX_KERNEL_CUSTOM_TARBALL || BR2_LINUX_KERNEL_CUSTOM_TREE
+	default "custom" if BR2_LINUX_KERNEL_CUSTOM_TARBALL || BR2_LINUX_KERNEL_CUSTOM_TREE || BR2_LINUX_KERNEL_CUSTOM_REPOSITORY
 
 #
 # Patch selection
