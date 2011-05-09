@@ -16,6 +16,7 @@ if BR2_LINUX_KERNEL
 #     version as the kernel headers
 #  3. A custom stable version
 #  4. A custom tarball
+#  5. A directory with pre-existing linux tree (is built out-of-tree)
 #
 choice
 	prompt "Kernel version"
@@ -47,6 +48,12 @@ config BR2_LINUX_KERNEL_CUSTOM_TARBALL
 	  This option allows to specify the http or ftp location of a
 	  specific kernel source tarball
 
+config BR2_LINUX_KERNEL_CUSTOM_TREE
+	bool "Custom unpacked tree"
+	help
+	  This option allows use of an already unpacked linux tree.
+
+
 endchoice
 
 config BR2_LINUX_KERNEL_CUSTOM_VERSION_VALUE
@@ -58,12 +65,16 @@ config BR2_LINUX_KERNEL_CUSTOM_TARBALL_LOCATION
 	string "URL of custom kernel tarball"
 	depends on BR2_LINUX_KERNEL_CUSTOM_TARBALL
 
+config BR2_LINUX_KERNEL_CUSTOM_PATH
+	string "PATH of custom kernel tree"
+	depends on BR2_LINUX_KERNEL_CUSTOM_TREE
+
 config BR2_LINUX_KERNEL_VERSION
 	string
 	default "2.6.37" if BR2_LINUX_KERNEL_2_6_37
 	default BR2_DEFAULT_KERNEL_HEADERS if BR2_LINUX_KERNEL_SAME_AS_HEADERS
 	default BR2_LINUX_KERNEL_CUSTOM_VERSION_VALUE if BR2_LINUX_KERNEL_CUSTOM_VERSION
-	default "custom" if BR2_LINUX_KERNEL_CUSTOM_TARBALL
+	default "custom" if BR2_LINUX_KERNEL_CUSTOM_TARBALL || BR2_LINUX_KERNEL_CUSTOM_TREE
 
 #
 # Patch selection
