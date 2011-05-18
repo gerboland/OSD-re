@@ -1,0 +1,25 @@
+config BR2_PACKAGE_EFL_EDJE
+	bool "edje"
+	select BR2_PACKAGE_PKG_CONFIG
+	select BR2_PACKAGE_LUA
+	select BR2_PACKAGE_LUA_SHARED_LIBRARY
+	select BR2_PACKAGE_FONTCONFIG
+	select BR2_PACKAGE_FREETYPE
+	select BR2_PACKAGE_EFL_EINA
+	select BR2_PACKAGE_EFL_EET
+	select BR2_PACKAGE_EFL_EMBRYO
+	select BR2_PACKAGE_EFL_ECORE
+	help
+	  EDJE EFL library
+
+
+if BR2_PACKAGE_EFL_EDJE
+
+config BR2_PACKAGE_EFL_EDJE_AMALGAMATION
+	bool "edje amalgamation"
+	help
+	  Enable generation of one single file with all source
+	  code in it, helps compiler optimizations.
+
+endif
+

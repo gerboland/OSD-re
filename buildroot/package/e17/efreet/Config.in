@@ -1,0 +1,22 @@
+config BR2_PACKAGE_EFL_EFREET
+	bool "efreet"
+	select BR2_PACKAGE_PKG_CONFIG
+	select BR2_PACKAGE_EFL_EINA
+	select BR2_PACKAGE_EFL_EET
+	select BR2_PACKAGE_EFL_ECORE
+	help
+	  EFREET EFL library
+
+if BR2_PACKAGE_EFL_EFREET
+
+config BR2_PACKAGE_EFL_EFREET_TESTS
+        bool "efreet tests"
+        help
+          Enable tests for EFREET EFL library
+
+config BR2_PACKAGE_EFL_EFREET_COVERAGE
+        bool "efreet coverage"
+        help
+          Enable coverage profiling instrumentation for EFREET EFL library
+
+endif

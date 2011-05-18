@@ -1,0 +1,25 @@
+menuconfig BR2_PACKAGE_E17
+	bool "Enlightenment (E17)"
+	select BR2_PACKAGE_XORG7
+	help
+	  Support for EFL libraries.
+
+	  http://www.enlightenment.org/
+
+if BR2_PACKAGE_E17
+
+    menu "EFL components"
+        source package/e17/eina/Config.in
+        source package/e17/eet/Config.in
+        source package/e17/evas/Config.in
+        source package/e17/ecore/Config.in
+        source package/e17/embryo/Config.in
+        source package/e17/edje/Config.in
+        source package/e17/e_dbus/Config.in
+        source package/e17/efreet/Config.in
+    endmenu
+
+endif
+
+comment "EFL requires a toolchain with WCHAR support"
+        depends on !BR2_USE_WCHAR

@@ -1,0 +1,5 @@
+config BR2_PACKAGE_EFL_EMBRYO
+	bool "embryo"
+	select BR2_PACKAGE_PKG_CONFIG
+	help
+	  EMBRYO EFL library

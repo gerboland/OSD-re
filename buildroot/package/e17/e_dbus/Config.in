@@ -1,0 +1,6 @@
+config BR2_PACKAGE_EFL_E_DBUS
+	bool "e_dbus"
+	select BR2_PACKAGE_PKG_CONFIG
+	select BR2_PACKAGE_QT_DBUS
+	help
+	  E_DBUS EFL library
